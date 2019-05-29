@@ -1,0 +1,16 @@
+@import '~bootstrap/dist/css/bootstrap.min.css';
+
+body, html {
+  height: 100%;
+}
+
+.card {
+  border: none;
+  -webkit-box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.15);
+  -moz-box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.15);
+}
+
+.bg-dark-white {
+  background-color: #fafafa;
+}
