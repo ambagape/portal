@@ -56,7 +56,7 @@ class PublishAngular extends Command
 
         File::moveDirectory(
             resource_path('angular/dist/angular'),
-            base_path('public'),
+            base_path('public') . '/angular',
             true
         );
 
