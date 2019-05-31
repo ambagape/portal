@@ -1,0 +1,12 @@
+{
+    "private": true,
+    "scripts": {
+        "install": "cd resources/angular && npm install",
+        "prod": "cd resources/angular && ./node_modules/@angular/cli/bin/ng build --prod",
+        "build": "cd resources/angular && ./node_modules/@angular/cli/bin/ng build",
+        "dev": "cd resources/angular && ./node_modules/@angular/cli/bin/ng serve"
+
+    },
+    "devDependencies": {
+    }
+}
