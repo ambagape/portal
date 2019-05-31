@@ -1,14 +1,3 @@
-# See http://help.github.com/ignore-files/ for more about ignoring files.
-
-# compiled output
-/dist
-/dist-server
-/tmp
-/out-tsc
-
-# dependencies
-/node_modules
-
 # IDEs and editors
 /.idea
 .project
@@ -43,3 +32,30 @@ testem.log
 .DS_Store
 Thumbs.db
 /.vs
+
+# Laravel
+/node_modules
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
+.env
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+
+/node_modules
+/public/hot
+/public/angular/*
+/public/storage
+/storage/*.key
+/vendor
+.env
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+angular.blade.php

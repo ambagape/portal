@@ -1,0 +1,133 @@
+stages:
+  - build
+  - publish-frontend
+  - deploy
+
+# Variables
+variables:
+  MYSQL_ROOT_PASSWORD: root
+  MYSQL_USER: homestead
+  MYSQL_PASSWORD: secret
+  MYSQL_DATABASE: van-meekeren
+  DB_HOST: mysql
+  DB_CONNECTION: mysql
+  CI_DEBUG_TRACE: "false"
+
+# Speed up builds
+cache:
+  key: $CI_BUILD_REF_NAME
+  paths:
+    - vendor
+    - node_modules
+    - public
+    - .yarn
+
+# Build backend assets
+build-backend:
+  stage: build
+  services:
+    - mysql:5.7
+    - redis:4.0.11-alpine
+  image: beeproger/php-7.2:1.4
+  before_script:
+    - mkdir -p ~/.ssh
+    - eval $(ssh-agent -s)
+    - ssh-add /keys/id_rsa
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+  script:
+    - cp .env.example .env
+    - composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-dev
+    # - php artisan key:generate
+    # - php artisan migrate --force
+    # - ./vendor/phpunit/phpunit/phpunit -v --coverage-text --colors=never --stderr
+  artifacts:
+    paths:
+      - app
+      - bootstrap
+      - config
+      - database
+      - resources
+      - routes
+      - vendor
+      - artisan
+    expire_in: 1 days
+    when: always
+
+# Build frontend
+frontend:
+  stage: build
+  image: beeproger/node-10:1.3
+  script:
+    - npm run install
+    - npm run prod
+  artifacts:
+    paths:
+      - ./resources/angular/dist
+    expire_in: 1 days
+    when: always
+
+# Publish frontend
+publish-frontend:
+  stage: publish-frontend
+  image: beeproger/php-7.2:1.4
+  script:
+    - php artisan publish:angular
+  artifacts:
+    paths:
+      - ./public
+      - ./resources/views
+    expire_in: 1 days
+
+# Deploy develop 'testing' branch
+deploy-staging:
+  variables: {
+    ENV: "$STAGE_ENV",
+    USER: "$STAGE_SRV_USER",
+    HOST: "$STAGE_SRV_HOST",
+    SSH: "ssh -tt $STAGE_SRV_USER@$STAGE_SRV_HOST",
+    BASE_PATH: "$STAGE_SRV_PATH",
+    CURRENT_PATH: "$STAGE_SRV_PATH/current",
+    STORAGE_PATH: "$STAGE_SRV_PATH/storage",
+    RELEASE_PATH: "$STAGE_SRV_PATH/releases/$CI_PIPELINE_ID",
+  }
+  extends: .deploy
+  stage: deploy
+  image: beeproger/php-7.2:1.3
+  script:
+    # Before activate
+    - $SSH "php $RELEASE_PATH/artisan migrate --force && php $RELEASE_PATH/artisan storage:link";
+    # Active new release
+    - $SSH "ln -nfs $RELEASE_PATH $CURRENT_PATH";
+    # After activate
+    # - $SSH "php $RELEASE_PATH/artisan horizon:terminate";
+    # - $SSH "php $RELEASE_PATH/artisan cache:clear";
+    # - $SSH "php $RELEASE_PATH/artisan route:cache";
+    # - $SSH "php $RELEASE_PATH/artisan config:cache";
+  only:
+    - develop
+  when: on_success
+  environment:
+    name: staging
+    url: ${STAGE_URL}
+
+# Zero downtime setup
+.deploy:
+  before_script:
+    - mkdir -p ~/.ssh
+    - eval $(ssh-agent -s)
+    - ssh-add /keys/id_rsa
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - $SSH "mkdir -p $RELEASE_PATH"
+    - |
+      $SSH "if [ ! -d $STORAGE_PATH ]; then
+        mkdir -p -m 775 $STORAGE_PATH/app/public;
+        mkdir -p -m 775 $STORAGE_PATH/framework/cache views testing sessions;
+      fi"
+    - $SSH "ln -nfs $STORAGE_PATH $RELEASE_PATH/storage"
+    - $SSH "echo '$ENV' > $RELEASE_PATH/.env";
+    - \[\[ -e ".ci-excludes" \]\] && xargs rm -rf < .ci-excludes || echo ci-excludes does not exist
+    - scp -P22 -r * $USER@$HOST:$RELEASE_PATH
+  after_script:
+    - eval $(ssh-agent -s)
+    - ssh-add /keys/id_rsa
+    - $SSH "wget -O $BASE_PATH/cleanup.sh https://git.beeproger.io/snippets/17/raw && cd $BASE_PATH && chmod +x cleanup.sh && sh cleanup.sh && rm -fr cleanup.sh";
