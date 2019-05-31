@@ -1,0 +1,63 @@
+stages:
+  - build
+  - deploy
+
+# Speed up builds
+cache:
+  key: $CI_BUILD_REF_NAME
+  paths:
+    - node_modules
+    - .yarn
+
+# Build staging
+build-staging:
+  stage: build
+  image: beeproger/node-10:1.0
+  script:
+    - npm install
+    - npm run build
+  artifacts:
+    paths:
+      - ./dist
+    expire_in: 1 days
+    when: always
+  only:
+    - develop
+
+# Deploy develop branch
+deploy-develop:
+  variables: {
+    USER: "$STAGE_SRV_USER",
+    HOST: "$STAGE_SRV_HOST",
+    SSH: "ssh -tt $STAGE_SRV_USER@$STAGE_SRV_HOST",
+    BASE_PATH: "$STAGE_SRV_PATH",
+    CURRENT_PATH: "$STAGE_SRV_PATH/current",
+    RELEASE_PATH: "$STAGE_SRV_PATH/releases/$CI_PIPELINE_ID",
+  }
+  extends: .deploy
+  stage: deploy
+  image: beeproger/php-7.2:1.3
+  script:
+    # Active new release
+    - $SSH "ln -nfs $RELEASE_PATH $CURRENT_PATH";
+  only:
+    - develop
+  when: on_success
+  environment:
+    name: staging
+    url: ${STAGE_URL}
+
+# Zero downtime setup
+.deploy:
+  before_script:
+    - mkdir -p ~/.ssh
+    - eval $(ssh-agent -s)
+    - ssh-add /keys/id_rsa
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - $SSH "mkdir -p $RELEASE_PATH"
+    - \[\[ -e ".ci-excludes" \]\] && xargs rm -rf < .ci-excludes || echo ci-excludes does not exist
+    - scp -P22 -r ./dist/* $USER@$HOST:$RELEASE_PATH
+  after_script:
+    - eval $(ssh-agent -s)
+    - ssh-add /keys/id_rsa
+    - $SSH "wget -q -O $BASE_PATH/cleanup.sh https://git.beeproger.io/snippets/17/raw && cd $BASE_PATH && chmod +x cleanup.sh && sh cleanup.sh && rm -fr cleanup.sh";
