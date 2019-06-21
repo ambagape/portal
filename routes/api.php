@@ -16,3 +16,8 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::namespace('API\v1')->prefix('image')->group(function () {
+    Route::get('profile/{id}', ['uses' => 'ImageController@showProfilePicture', 'as' => 'image.show-profile-picture']);
+    Route::post('profile', ['uses' => 'ImageController@uploadProfilePicture', 'as' => 'image.upload-profile-picture']);
+});
