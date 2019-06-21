@@ -96,6 +96,7 @@ deploy-staging:
   script:
     # Before activate
     # - $SSH "php $RELEASE_PATH/artisan migrate --force && php $RELEASE_PATH/artisan storage:link"; 
+    - $SSH "php $RELEASE_PATH/artisan storage:link";
     # Active new release
     - $SSH "ln -nfs $RELEASE_PATH $CURRENT_PATH";
     # After activate
