@@ -19,7 +19,7 @@ class ImageController extends Controller
             $server = ServerFactory::create([
                 'response' => new LaravelResponseFactory(app('request')),
                 'source' => $fileSystem->getDriver(),
-                'cache' => $cacheFilesystem->getDriver(),
+                'cache' => $cacheFilesystem,
                 'source_path_prefix' => '/public',
                 'cache_path_prefix' => '/public/.cache',
                 'base_url' => 'img',
