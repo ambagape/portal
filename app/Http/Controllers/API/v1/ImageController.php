@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\v1;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use League\Glide\Responses\LaravelResponseFactory;
 use League\Glide\ServerFactory;
 
@@ -52,18 +53,8 @@ class ImageController extends Controller
         $filename = $request->id . '.' . $profileFicture->getClientOriginalExtension();
         $profileFicture->move(storage_path($path), $filename);
 
-        // Clear glide cache
-        $server = ServerFactory::create([
-            'response' => new LaravelResponseFactory(app('request')),
-            'source' => $fileSystem->getDriver(),
-            'cache' => $fileSystem->getDriver(),
-            'source_path_prefix' => '/public',
-            'cache_path_prefix' => '/public/.cache',
-            'base_url' => 'img',
-        ]);
-
-        $server->deleteCache($filename);
-
+        File::deleteDirectory(public_path('.cache'));
+        
         response(200);
     }
 }
