@@ -38,7 +38,7 @@ class ImageController extends Controller
         }
     }
 
-    public function uploadProfilePicture(Request $request)
+    public function uploadProfilePicture(FileSystem $fileSystem, Request $request)
     {
         $request->validate([
             'id' => 'required',
@@ -51,6 +51,18 @@ class ImageController extends Controller
         $path = 'app/public/images/profile';
         $filename = $request->id . '.' . $profileFicture->getClientOriginalExtension();
         $profileFicture->move(storage_path($path), $filename);
+
+        // Clear glide cache
+        $server = ServerFactory::create([
+            'response' => new LaravelResponseFactory(app('request')),
+            'source' => $fileSystem->getDriver(),
+            'cache' => $fileSystem->getDriver(),
+            'source_path_prefix' => '/public',
+            'cache_path_prefix' => '/public/.cache',
+            'base_url' => 'img',
+        ]);
+
+        $server->deleteCache($filename);
 
         response(200);
     }
