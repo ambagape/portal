@@ -4,8 +4,10 @@ namespace App\Http\Controllers\API\v1;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\Filesystem\Filesystem;
+use League\Flysystem\Filesystem as MemoryFilesystem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use League\Flysystem\Memory\MemoryAdapter;
 use League\Glide\Responses\LaravelResponseFactory;
 use League\Glide\ServerFactory;
 
@@ -14,10 +16,12 @@ class ImageController extends Controller
     public function showProfilePicture(FileSystem $fileSystem, $id)
     {
         if (file_exists(public_path('storage/images/profile/' . $id))) {
+            $cacheFilesystem = new MemoryFilesystem(new MemoryAdapter());
+
             $server = ServerFactory::create([
                 'response' => new LaravelResponseFactory(app('request')),
                 'source' => $fileSystem->getDriver(),
-                'cache' => $fileSystem->getDriver(),
+                'cache' => $cacheFilesystem->getDriver(),
                 'source_path_prefix' => '/public',
                 'cache_path_prefix' => '/public/.cache',
                 'base_url' => 'img',
@@ -53,8 +57,6 @@ class ImageController extends Controller
         $filename = $request->id . '.' . $profileFicture->getClientOriginalExtension();
         $profileFicture->move(storage_path($path), $filename);
 
-        File::deleteDirectory(public_path('.cache'));
-        
         response(200);
     }
 }
