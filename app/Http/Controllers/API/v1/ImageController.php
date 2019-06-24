@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\v1;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use League\Flysystem\Memory\MemoryAdapter;
 use League\Glide\Responses\LaravelResponseFactory;
 use League\Glide\ServerFactory;
@@ -41,7 +42,7 @@ class ImageController extends Controller
         }
     }
 
-    public function uploadProfilePicture(FileSystem $fileSystem, Request $request)
+    public function uploadProfilePicture(Request $request)
     {
         $request->validate([
             'id' => 'required',
@@ -54,6 +55,15 @@ class ImageController extends Controller
         $path = 'app/public/images/profile';
         $filename = $request->id . '.' . $profileFicture->getClientOriginalExtension();
         $profileFicture->move(storage_path($path), $filename);
+
+        response(200);
+    }
+
+    public function clearProfilePicture($id) {
+        $image_path = "/images/profile/" . $id . ".jpg";
+        if(File::exists($image_path)) {
+            File::delete($image_path);
+        }
 
         response(200);
     }
