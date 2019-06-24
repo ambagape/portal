@@ -38,7 +38,7 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
-            \Barryvdh\Cors\HandleCors::class,
+            \Spatie\Cors\Cors::class,
             'throttle:60,1',
             'bindings',
         ],

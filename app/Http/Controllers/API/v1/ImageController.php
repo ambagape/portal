@@ -5,7 +5,6 @@ namespace App\Http\Controllers\API\v1;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
 use League\Flysystem\Memory\MemoryAdapter;
 use League\Glide\Responses\LaravelResponseFactory;
 use League\Glide\ServerFactory;
@@ -28,7 +27,7 @@ class ImageController extends Controller
 
             return $server->getImageResponse('images/profile/' . $id, request()->all());
 
-        // Return placeholder if no picture is found
+            // Return placeholder if no picture is found
         } else {
             $server = ServerFactory::create([
                 'response' => new LaravelResponseFactory(app('request')),
@@ -59,10 +58,11 @@ class ImageController extends Controller
         response(200);
     }
 
-    public function clearProfilePicture($id) {
-        $image_path = "/images/profile/" . $id . ".jpg";
-        if(File::exists($image_path)) {
-            File::delete($image_path);
+    public function clearProfilePicture($id)
+    {
+        $image_path = public_path('storage/images/profile/' . $id . '.jpg');
+        if (file_exists($image_path)) {
+            unlink($image_path);
         }
 
         response(200);
