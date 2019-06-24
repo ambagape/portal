@@ -19,5 +19,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::namespace('API\v1')->prefix('image')->group(function () {
     Route::get('profile/{id}', ['uses' => 'ImageController@showProfilePicture', 'as' => 'image.show-profile-picture']);
+    Route::get('profile/delete/{id}', ['uses' => 'ImageController@clearProfilePicture', 'as' => 'image.clear-profile-picture']);
     Route::post('profile', ['uses' => 'ImageController@uploadProfilePicture', 'as' => 'image.upload-profile-picture']);
 });
