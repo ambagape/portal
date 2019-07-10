@@ -12,7 +12,6 @@
         "beyondcode/laravel-websockets": "^1.1",
         "fideloper/proxy": "^4.0",
         "guzzlehttp/guzzle": "^6.3",
-        "kawankoding/laravel-fcm": "^0.1.8",
         "laravel/framework": "5.8.*",
         "laravel/tinker": "^1.0",
         "league/flysystem-memory": "^1.0",
