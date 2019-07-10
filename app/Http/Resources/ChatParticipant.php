@@ -17,7 +17,7 @@ class ChatParticipant extends JsonResource
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
-            'chat_conversation_id' => $this->chat_conversation_id,
+            'conversation_id' => $this->chat_conversation_id,
             'user' => $this->whenLoaded('user'),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),

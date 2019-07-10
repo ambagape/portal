@@ -25,7 +25,7 @@ class ChatMessageSent implements ShouldBroadcast
 
     public function broadcastWith()
     {
-        return $this->message->toArray();
+        return (new \App\Http\Resources\ChatMessage($this->message))->response()->getData(true);
     }
 
     public function broadcastOn()

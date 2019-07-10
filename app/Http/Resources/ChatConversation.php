@@ -17,7 +17,7 @@ class ChatConversation extends JsonResource
         return [
             'id' => $this->id,
             'last_message' => new ChatMessage($this->whenLoaded('lastMessage')),
-            'participants' => ChatParticipant::collection($this->whenLoaded('participants'))
+            'participant' => new ChatParticipant($this->whenLoaded('participants')->first())
         ];
     }
 }

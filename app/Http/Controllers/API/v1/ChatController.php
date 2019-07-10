@@ -21,7 +21,11 @@ class ChatController extends Controller
         $token = $this->getToken($request);
 
         $conversations = ChatConversation::query()
-            ->with(['lastMessage'])
+            ->with(['lastMessage',
+                'participants' => function ($query) use ($token) {
+                    return $query->where('user_id', '!=', $token->user_id);
+                }
+            ])
             ->whereHas('participants', function ($query) use ($token) {
                 $query->where('user_id', '=', $token->user_id);
             })
@@ -102,7 +106,8 @@ class ChatController extends Controller
         $message = ChatMessage::create([
             'message' => $validated['message'],
             'chat_conversation_id' => $chat_conversation->id,
-            'user_id' => $token->user_id
+            'user_id' => $token->user_id,
+            'seen' => false
         ]);
 
         $chat_conversation->participants->each(function ($participant) use ($message) {
