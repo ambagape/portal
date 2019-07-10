@@ -18,6 +18,7 @@ class AuthController extends Controller
         $validated = $request->validate([
             'username'  => 'required',
             'password'  => 'required',
+            'full_name'  => 'required'
         ]);
 
         $body = [];
@@ -35,8 +36,10 @@ class AuthController extends Controller
         }
 
         // Get user
-        $user = User::firstOrCreate([
+        $user = User::updateOrCreate([
             'rebase_user_id' => $data->Login->UserID
+        ], [
+            'full_name' => $validated['full_name']
         ]);
 
         // Create new token

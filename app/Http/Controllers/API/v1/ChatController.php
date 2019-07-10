@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\v1;
 
+use App\Events\ChatMessageSent;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ChatConversation as ChatConversationResource;
 use App\Http\Resources\ChatMessage as ChatMessageResource;
@@ -20,20 +21,17 @@ class ChatController extends Controller
         $token = $this->getToken($request);
 
         $conversations = ChatConversation::query()
-            ->with(['lastMessage'])
+            ->with(['lastMessage',
+                'participants' => function ($query) use ($token) {
+                    return $query->where('user_id', '!=', $token->user_id);
+                }
+            ])
             ->whereHas('participants', function ($query) use ($token) {
                 $query->where('user_id', '=', $token->user_id);
             })
             ->get();
 
         return ChatConversationResource::collection($conversations);
-    }
-
-    private function getToken(Request $request)
-    {
-        $token = explode(" ", $request->header('Authorization'))[1];
-
-        return Token::where('token', $token)->first();
     }
 
     public function startConversation(Request $request)
@@ -108,8 +106,15 @@ class ChatController extends Controller
         $message = ChatMessage::create([
             'message' => $validated['message'],
             'chat_conversation_id' => $chat_conversation->id,
-            'user_id' => $token->user_id
+            'user_id' => $token->user_id,
+            'seen' => false
         ]);
+
+        $chat_conversation->participants->each(function ($participant) use ($message) {
+            if ($participant->user->rebase_user_id !== auth()->user()->rebase_user_id) {
+                event(new ChatMessageSent($message, $participant->user));
+            }
+        });
 
         return new ChatMessageResource($message);
     }
@@ -124,5 +129,12 @@ class ChatController extends Controller
         if (!$isParticipant) {
             abort(403);
         }
+    }
+
+    private function getToken(Request $request)
+    {
+        $token = explode(" ", $request->header('Authorization'))[1];
+
+        return Token::where('token', $token)->first();
     }
 }

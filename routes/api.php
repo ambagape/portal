@@ -21,7 +21,7 @@ Route::namespace('API\v1')->prefix('auth')->group(function () {
     Route::post('login', ['uses' => 'AuthController@Login', 'as' => 'auth.login']);
 });
 
-Route::namespace('API\v1')->prefix('chat')->middleware(['checkToken'])->group(function () {
+Route::namespace('API\v1')->prefix('chat')->middleware(['auth:api'])->group(function () {
     Route::get('conversations', ['uses' => 'ChatController@conversations', 'as' => 'chat.conversations']);
     Route::post('conversations', ['uses' => 'ChatController@startConversation', 'as' => 'chat.startConversation']);
     Route::get('messages/{chat_conversation}', ['uses' => 'ChatController@messages', 'as' => 'chat.messages']);
