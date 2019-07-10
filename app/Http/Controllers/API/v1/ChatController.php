@@ -112,7 +112,7 @@ class ChatController extends Controller
 
         $chat_conversation->participants->each(function ($participant) use ($message) {
             if ($participant->user->rebase_user_id !== auth()->user()->rebase_user_id) {
-                event(new ChatMessageSent($message, $participant->user));
+                event(new ChatMessageSent($message, $participant->user, auth()->user()));
             }
         });
 

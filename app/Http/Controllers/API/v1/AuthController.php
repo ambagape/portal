@@ -53,4 +53,17 @@ class AuthController extends Controller
             'token' => $token->token,
         ]);
     }
+
+    public function registerToken(Request $request)
+    {
+        $validated = $request->validate([
+            'push_token'  => 'required',
+        ]);
+
+        Token::query()
+            ->where('token', $request->bearerToken())
+            ->update(['push_token' => $validated['push_token']]);
+
+        return response()->json(['success' => 'success'], 200);
+    }
 }

@@ -8,7 +8,8 @@ class Token extends Model
 {
     protected $fillable = [
         'token',
-        'user_id'
+        'user_id',
+        'push_token'
     ];
 
     public function user() {
