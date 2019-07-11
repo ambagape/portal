@@ -13,10 +13,6 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::namespace('API\v1')->prefix('auth')->group(function () {
     Route::post('login', ['uses' => 'AuthController@Login', 'as' => 'auth.login']);
 });
@@ -30,6 +26,7 @@ Route::namespace('API\v1')->prefix('chat')->middleware(['auth:api'])->group(func
     Route::post('conversations', ['uses' => 'ChatController@startConversation', 'as' => 'chat.start-conversation']);
     Route::get('messages/{chat_conversation}', ['uses' => 'ChatController@messages', 'as' => 'chat.messages']);
     Route::post('messages/{chat_conversation}', ['uses' => 'ChatController@sendMessage', 'as' => 'chat.sendMessage']);
+    Route::post('mark_as_read', ['uses' => 'ChatController@markAsRead', 'as' => 'chat.markAsRead']);
 });
 
 Route::namespace('API\v1')->prefix('image')->group(function () {
