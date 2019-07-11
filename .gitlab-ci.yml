@@ -100,7 +100,7 @@ deploy-staging:
     # Active new release
     - $SSH "ln -nfs $RELEASE_PATH $CURRENT_PATH";
     # After activate
-    - $SSH "php $RELEASE_PATH/artisan horizon:terminate";
+    # - $SSH "php $RELEASE_PATH/artisan horizon:terminate";
     - $SSH "php $RELEASE_PATH/artisan cache:clear";
     - $SSH "php $RELEASE_PATH/artisan route:cache";
     - $SSH "php $RELEASE_PATH/artisan config:cache";
@@ -131,4 +131,4 @@ deploy-staging:
   after_script:
     - eval $(ssh-agent -s)
     - ssh-add /keys/id_rsa
-    - $SSH "wget -O $BASE_PATH/cleanup.sh https://git.beeproger.io/snippets/17/raw && cd $BASE_PATH && chmod +x cleanup.sh && sh cleanup.sh;
+    - $SSH "wget -O $BASE_PATH/cleanup.sh https://git.beeproger.io/snippets/17/raw && cd $BASE_PATH && chmod +x cleanup.sh && sh cleanup.sh && rm -fr cleanup.sh";
