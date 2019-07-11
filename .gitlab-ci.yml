@@ -131,4 +131,4 @@ deploy-staging:
   after_script:
     - eval $(ssh-agent -s)
     - ssh-add /keys/id_rsa
-    - $SSH "wget -O $BASE_PATH/cleanup.sh https://git.beeproger.io/snippets/17/raw && cd $BASE_PATH && chmod +x cleanup.sh && sh cleanup.sh && rm -fr cleanup.sh";
+    - $SSH "wget -O $BASE_PATH/cleanup.sh https://git.beeproger.io/snippets/17/raw && cd $BASE_PATH && chmod +x cleanup.sh && sh cleanup.sh;
