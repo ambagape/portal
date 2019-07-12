@@ -42,6 +42,9 @@ class AuthController extends Controller
             'full_name' => $validated['full_name']
         ]);
 
+        // Delete other tokens
+        Token::where('user_id', $user->id)->delete();
+
         // Create new token
         $token = Token::create([
             'user_id' => $user->id,
@@ -60,6 +63,10 @@ class AuthController extends Controller
             'push_token'  => 'required',
         ]);
 
+        // Remove push tokens from other keys
+        Token::where('push_token', $validated['push_token'])->update(['push_token' => null]);
+
+        // Set Push token
         Token::query()
             ->where('token', $request->bearerToken())
             ->update(['push_token' => $validated['push_token']]);
