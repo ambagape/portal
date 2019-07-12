@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\API\v1;
 
 use App\Events\ChatMessageSent;
-use App\Events\ChatMessagesSeen;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ChatConversation as ChatConversationResource;
 use App\Http\Resources\ChatMessage as ChatMessageResource;
@@ -128,36 +127,16 @@ class ChatController extends Controller
         return new ChatMessageResource($message->load('user'));
     }
 
-    public function markAsRead(Request $request) {
-        $validated = $request->validate([
-            'conversation_id' => 'required'
-        ]);
-
+    public function unread(Request $request) {
         $token = $this->getToken($request);
-        $chat_conversation = ChatConversation::where('id', $validated['conversation_id'])->firstOrFail();
-        $this->isParticipant($token->user, $chat_conversation);
-
-        $chat_conversation->participants->each(function ($participant) use ($chat_conversation) {
-            if ($participant->user->rebase_user_id !== auth()->user()->rebase_user_id) {
-                $messages = ChatMessage::query()
-                    ->where('chat_conversation_id', $chat_conversation->id)
-                    ->where('user_id', $participant->user->id)
-                    ->where('seen', false)
-                    ->get();
-
-                event(new ChatMessagesSeen($messages, $participant->user));
-            }
-        });
-
-        ChatMessage::query()
-            ->where('chat_conversation_id', $chat_conversation->id)
-            ->where('user_id', '!=', auth()->user()->id)
+        $count = ChatMessage::query()
+            ->where('user_id', $token->user_id)
             ->where('seen', false)
-            ->update([
-                'seen' => true
-            ]);
+            ->count();
 
-        return response()->json(['success' => 'success'], 200);
+        return response()->json(['data' => [
+            'count' => $count
+        ]], 200);
     }
 
     private function isParticipant(User $user, ChatConversation $chat_conversation)
