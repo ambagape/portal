@@ -8,7 +8,7 @@ variables:
   MYSQL_ROOT_PASSWORD: root
   MYSQL_USER: homestead
   MYSQL_PASSWORD: secret
-  MYSQL_DATABASE: van-meekeren
+  MYSQL_DATABASE: rebase
   DB_HOST: mysql
   DB_CONNECTION: mysql
   CI_DEBUG_TRACE: "false"
@@ -37,8 +37,8 @@ build-backend:
   script:
     - cp .env.example .env
     - composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-dev
-    # - php artisan key:generate
-    # - php artisan migrate --force
+    - php artisan key:generate
+    - php artisan migrate --force
     # - ./vendor/phpunit/phpunit/phpunit -v --coverage-text --colors=never --stderr
   artifacts:
     paths:
