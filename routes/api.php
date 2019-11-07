@@ -36,5 +36,5 @@ Route::namespace('API\v1')->prefix('image')->group(function () {
 });
 
 Route::namespace('API\v1')->prefix('webhook')->group(function () {
-    Route::post('notify', ['uses' => 'WebHookcontroller@notify', 'as' => 'webhook.notify']);
+    Route::post('notify', ['uses' => 'WebhookController@notify', 'as' => 'webhook.notify']);
 });
