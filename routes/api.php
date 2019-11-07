@@ -34,3 +34,7 @@ Route::namespace('API\v1')->prefix('image')->group(function () {
     Route::get('profile/delete/{id}', ['uses' => 'ImageController@clearProfilePicture', 'as' => 'image.clear-profile-picture']);
     Route::post('profile', ['uses' => 'ImageController@uploadProfilePicture', 'as' => 'image.upload-profile-picture']);
 });
+
+Route::namespace('API\v1')->prefix('webhook')->group(function () {
+    Route::post('notify', ['uses' => 'WebHookcontroller@notify', 'as' => 'webhook.notify']);
+});
