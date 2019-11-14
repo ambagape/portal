@@ -10,6 +10,7 @@ class WebhookController extends Controller
 {
     public function notify(Request $request)
     {
+        info($request->toArray());
         $request->validate([
             'key' => 'required'
         ]);
