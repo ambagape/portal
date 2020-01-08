@@ -23,7 +23,7 @@ Route::namespace('API\v1')->prefix('auth')->middleware(['auth:api'])->group(func
 
 Route::namespace('API\v1')->prefix('chat')->middleware(['auth:api'])->group(function () {
     Route::get('conversations', ['uses' => 'ChatController@conversations', 'as' => 'chat.conversations']);
-    Route::post('conversations', ['uses' => 'ChatController@startConversation', 'as' => 'chat.start-conversation']);
+    Route::post('conversations', ['uses' => 'ChatController@conversation', 'as' => 'chat.start-conversation']);
     Route::get('messages/{chat_conversation}', ['uses' => 'ChatController@messages', 'as' => 'chat.messages']);
     Route::post('messages/{chat_conversation}', ['uses' => 'ChatController@sendMessage', 'as' => 'chat.sendMessage']);
     Route::get('unread', ['uses' => 'ChatController@unread', 'as' => 'chat.unread']);

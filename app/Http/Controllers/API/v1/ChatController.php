@@ -8,75 +8,60 @@ use App\Http\Resources\ChatConversation as ChatConversationResource;
 use App\Http\Resources\ChatMessage as ChatMessageResource;
 use App\Models\ChatConversation;
 use App\Models\ChatMessage;
-use App\Models\ChatParticipant;
 use App\Models\Token;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ChatController extends Controller
 {
 
-    public function conversations(Request $request)
+    public function conversations(Request $request): AnonymousResourceCollection
     {
         $token = $this->getToken($request);
 
         $conversations = ChatConversation::query()
-            ->with(['lastMessage',
-                'participants' => function ($query) use ($token) {
-                    return $query->where('user_id', '!=', $token->user_id);
-                }
-            ])
-            ->whereHas('participants', function ($query) use ($token) {
-                $query->where('user_id', '=', $token->user_id);
+            ->with(['lastMessage'])
+            ->where(static function (Builder $query) use ($token) {
+                return $query
+                    ->where('client_user_id', $token->id)
+                    ->orWhere('coach_user_id', $token->id);
             })
             ->get();
 
         return ChatConversationResource::collection($conversations);
     }
 
-    public function startConversation(Request $request)
+    public function conversation(Request $request)
     {
         $token = $this->getToken($request);
 
         $validated = $request->validate([
-            'rebase_user_id' => 'required'
+            'coach_rebase_id' => 'required',
+            'client_rebase_id' => 'required'
         ]);
 
-        // Get all participants
-        $participants = User::query()
-            ->orWhere('id', $token->user_id)
-            ->orWhere('rebase_user_id', $validated['rebase_user_id'])
-            ->get();
+        $coachUser = User::query()->where('rebase_user_id', $validated['coach_rebase_id'])->firstOrFail();
+        $clientUser = User::query()->where('rebase_user_id', $validated['client_rebase_id'])->firstOrFail();
 
-        if ($participants->count() < 2) {
-            abort(404);
-        }
-
-        // Get conversation with these participants, if it exists
-        $conversation = ChatConversation::whereHas('participants', function ($query) use ($token, $validated) {
-            $query
-                ->where('user_id', '=', $token->user_id)
-                ->orWhere('user_id', '=', $validated['rebase_user_id']);
-        })->first();
+        $conversation = ChatConversation::query()
+            ->where('coach_user_id', $coachUser->id)
+            ->where('client_user_id', $clientUser->id)
+            ->first();
 
         // Create conversation with participants if it didn't exist
         if (!$conversation) {
-            $conversation = ChatConversation::create();
-
-            foreach ($participants as $participant) {
-                ChatParticipant::create([
-                    'user_id' => $participant->id,
-                    'chat_conversation_id' => $conversation->id
-                ]);
-            }
-
-            $conversation = $conversation->fresh(['participants']);
+            $conversation = ChatConversation::create([
+                'coach_user_id' => $coachUser->id,
+                'client_user_id' => $clientUser->id
+            ]);
         }
 
         return new ChatConversationResource($conversation);
     }
 
-    public function messages(Request $request, ChatConversation $chat_conversation)
+    public function messages(Request $request, ChatConversation $chat_conversation): AnonymousResourceCollection
     {
         $token = $this->getToken($request);
         $this->isParticipant($token->user, $chat_conversation);
@@ -118,11 +103,13 @@ class ChatController extends Controller
             'seen' => false
         ]);
 
-        $chat_conversation->participants->each(function ($participant) use ($message) {
-            if ($participant->user->rebase_user_id !== auth()->user()->rebase_user_id) {
-                event(new ChatMessageSent($message, $participant->user, auth()->user()));
-            }
-        });
+        if ($chat_conversation->client_user_id === $token->user_id) {
+            event(new ChatMessageSent($message, $chat_conversation->coachUser, auth()->user()));
+        }
+
+        if ($chat_conversation->coach_user_id === $token->user_id) {
+            event(new ChatMessageSent($message, $chat_conversation->clientUser, auth()->user()));
+        }
 
         return new ChatMessageResource($message->load('user'));
     }
@@ -141,10 +128,7 @@ class ChatController extends Controller
 
     private function isParticipant(User $user, ChatConversation $chat_conversation)
     {
-        $isParticipant = $chat_conversation->participants->filter(
-                function ($participant) use ($user) {
-                    return $participant->user_id === $user->id;
-                })->count() > 0;
+        $isParticipant = $chat_conversation->client_user_id === $user->id || $chat_conversation->coach_user_id === $user->id;
 
         if (!$isParticipant) {
             abort(403);
