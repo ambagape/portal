@@ -13,7 +13,6 @@ use Illuminate\Http\Request;
 
 class WebhookController extends Controller
 {
-    public $user = null;
 
     public function notify(Request $request)
     {
@@ -28,21 +27,23 @@ class WebhookController extends Controller
 
         try {
             $client = new Client();
-            $response = $client->post(env('REBASE_API_URL') . "/AfspraakInfo",  ['form_params' => $body]);
-            $this->user = json_decode($response->getBody());
+            $response = $client->request('GET', env('REBASE_API_URL') . "/AfspraakInfo", ['query' => $body]);
+            $baseuser  = json_decode($response->getBody());
         } catch (RequestException $e) {
             abort(500);
         }
 
-        $this->user = User::where('rebase_user_id', $this->user->AfspraakInfo->Client_Uniek_ID);
+        $user = User::where('rebase_user_id', $baseuser->AfspraakInfo->Client_Uniek_ID)->first();
 
-        if($this->user) {
-            $this->user->tokens->map(function ($token) {
-                (new SendMessage())->sendFCM('Er is een afspraak gewijzigd op'. Carbon::now()->toDateString(), 'Afspraak gewijzigd', $token->push_token);
+        if($baseuser->AfspraakInfo->Afspraakstatus === 1 && $user) {
+            $user->tokens->map(function ($token) {
+                (new SendMessage())->sendFCM('Er is een niewe afspraak', 'Nieuwe afspraak', $token->push_token);
             });
-
+            return new JsonResponse($request->get('key'));
         }
 
-        return new JsonResponse($request->get('key'));
+        $user->tokens->map(function ($token) {
+            (new SendMessage())->sendFCM('Er is een een afspraak gewijzigd op '. Carbon::now()->toDateString(), 'Gewijzigde afspraak', $token->push_token);
+        });
     }
 }
