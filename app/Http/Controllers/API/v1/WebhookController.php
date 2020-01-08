@@ -45,5 +45,7 @@ class WebhookController extends Controller
         $user->tokens->map(function ($token) {
             (new SendMessage())->sendFCM('Er is een een afspraak gewijzigd op '. Carbon::now()->toDateString(), 'Gewijzigde afspraak', $token->push_token);
         });
+
+        return new JsonResponse($request->get('key'));
     }
 }
