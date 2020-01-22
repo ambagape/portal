@@ -11,6 +11,7 @@ use App\Models\ChatMessage;
 use App\Models\Token;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
@@ -116,10 +117,22 @@ class ChatController extends Controller
 
     public function unread(Request $request) {
         $token = $this->getToken($request);
+
+
+        $conversationId = ChatConversation::query()
+            ->with(['lastMessage'])
+            ->where(static function (Builder $query) use ($token) {
+                return $query
+                    ->where('client_user_id', $token->user_id)
+                    ->orWhere('coach_user_id', $token->user_id);
+            })
+            ->pluck('id');
+
         $count = ChatMessage::query()
-            ->where('user_id', $token->user_id)
-            ->where('seen', false)
+            ->where('chat_conversation_id' , $conversationId)
+            ->where('seen' , false)
             ->count();
+
 
         return response()->json(['data' => [
             'count' => $count
