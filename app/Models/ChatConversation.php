@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Carbon\Traits\Timestamp;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class ChatConversation extends Model
 {
@@ -11,27 +14,35 @@ class ChatConversation extends Model
 
     public $fillable = ['coach_user_id', 'client_user_id'];
 
-    public function clientUser()
+    public function clientUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'client_user_id');
     }
 
-    public function coachUser()
+    public function coachUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'coach_user_id');
     }
 
-    public function messages()
+    public function messages(): HasMany
     {
         return $this->hasMany(ChatMessage::class);
     }
 
-    public function lastMessage()
+    public function lastMessage(): HasOne
     {
         return $this->hasOne(ChatMessage::class)->latest();
     }
 
-    public function participants()
+    public function unread(): int {
+
+        return ChatMessage::query()
+            ->where('chat_conversation_id', $this->id)
+            ->where('seen', false)
+            ->count();
+    }
+
+    public function participants(): HasMany
     {
         return $this->hasMany(ChatParticipant::class);
     }

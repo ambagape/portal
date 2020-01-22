@@ -18,7 +18,8 @@ class ChatConversation extends JsonResource
             'id' => $this->id,
             'last_message' => new ChatMessage($this->whenLoaded('lastMessage')),
             'client' => $this->clientUser,
-            'coach' => $this->coachUser
+            'coach' => $this->coachUser,
+            'unread_messages' => $this->unread()
         ];
     }
 }
