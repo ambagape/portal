@@ -25,8 +25,8 @@ class ChatController extends Controller
             ->with(['lastMessage'])
             ->where(static function (Builder $query) use ($token) {
                 return $query
-                    ->where('client_user_id', $token->id)
-                    ->orWhere('coach_user_id', $token->id);
+                    ->where('client_user_id', $token->user_id)
+                    ->orWhere('coach_user_id', $token->user_id);
             })
             ->get();
 
