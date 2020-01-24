@@ -119,7 +119,7 @@ class ChatController extends Controller
         $token = $this->getToken($request);
 
 
-        $conversationId = ChatConversation::query()
+        $conversationIds = ChatConversation::query()
             ->with(['lastMessage'])
             ->where(static function (Builder $query) use ($token) {
                 return $query
@@ -128,11 +128,12 @@ class ChatController extends Controller
             })
             ->pluck('id');
 
-        $count = ChatMessage::query()
-            ->where('chat_conversation_id' , $conversationId)
-            ->where('seen' , false)
-            ->count();
 
+        $count = ChatMessage::query()
+            ->where('seen', false)
+            ->whereIn('chat_conversation_id', $conversationIds)
+            ->where('user_id' , '!=', $token->user_id)
+            ->count();
 
         return response()->json(['data' => [
             'count' => $count
