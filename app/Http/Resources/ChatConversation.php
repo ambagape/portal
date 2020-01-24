@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ChatConversation extends JsonResource
@@ -9,7 +10,7 @@ class ChatConversation extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      * @return array
      */
     public function toArray($request)
@@ -23,8 +24,8 @@ class ChatConversation extends JsonResource
             'unread_messages' => $this->unread($token->user_id)
         ];
     }
-    
-    private function getToken(Illuminate\Http\Request $request)
+
+    private function getToken(Request $request)
     {
         $token = explode(" ", $request->header('Authorization'))[1];
 
