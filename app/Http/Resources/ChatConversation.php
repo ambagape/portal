@@ -14,12 +14,13 @@ class ChatConversation extends JsonResource
      */
     public function toArray($request)
     {
+        $token = $this->getToken($request);
         return [
             'id' => $this->id,
             'last_message' => new ChatMessage($this->whenLoaded('lastMessage')),
             'client' => $this->clientUser,
             'coach' => $this->coachUser,
-            'unread_messages' => $this->unread()
+            'unread_messages' => $this->unread($token->user_id)
         ];
     }
 }

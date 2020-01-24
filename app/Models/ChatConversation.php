@@ -34,12 +34,12 @@ class ChatConversation extends Model
         return $this->hasOne(ChatMessage::class)->latest();
     }
 
-    public function unread(): int {
+    public function unread(int $user_id): int {
 
         return ChatMessage::query()
             ->where('chat_conversation_id', $this->id)
             ->where('seen', false)
-            ->where('user_id', '!==', $this->id)
+            ->where('user_id', '!=', $user_id)
             ->count();
     }
 
