@@ -132,6 +132,7 @@ class ChatController extends Controller
         $count = ChatMessage::query()
             ->where('seen', false)
             ->whereIn('chat_conversation_id', $conversationIds)
+            ->where('user_id' , '!=', $token->user_id)
             ->count();
 
         return response()->json(['data' => [
