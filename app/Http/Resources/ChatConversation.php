@@ -23,4 +23,12 @@ class ChatConversation extends JsonResource
             'unread_messages' => $this->unread($token->user_id)
         ];
     }
+    
+    private function getToken(Request $request)
+    {
+        $token = explode(" ", $request->header('Authorization'))[1];
+
+        return Token::where('token', $token)->first();
+    }
+
 }
