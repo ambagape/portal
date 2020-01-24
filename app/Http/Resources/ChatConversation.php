@@ -24,7 +24,7 @@ class ChatConversation extends JsonResource
         ];
     }
     
-    private function getToken(Request $request)
+    private function getToken(Illuminate\Http\Request $request)
     {
         $token = explode(" ", $request->header('Authorization'))[1];
 
