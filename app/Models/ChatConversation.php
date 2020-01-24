@@ -39,6 +39,7 @@ class ChatConversation extends Model
         return ChatMessage::query()
             ->where('chat_conversation_id', $this->id)
             ->where('seen', false)
+            ->where('user_id', '!==', $this->id)
             ->count();
     }
 
