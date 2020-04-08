@@ -104,12 +104,14 @@ class ChatController extends Controller
             'seen' => false
         ]);
 
+        $unreadMessages = $this->unreadMessages($token);
+
         if ($chat_conversation->client_user_id === $token->user_id) {
-            event(new ChatMessageSent($message, $chat_conversation->coachUser, auth()->user()));
+            event(new ChatMessageSent($message, $chat_conversation->coachUser, auth()->user(), $unreadMessages));
         }
 
         if ($chat_conversation->coach_user_id === $token->user_id) {
-            event(new ChatMessageSent($message, $chat_conversation->clientUser, auth()->user()));
+            event(new ChatMessageSent($message, $chat_conversation->clientUser, auth()->user(), $unreadMessages));
         }
 
         return new ChatMessageResource($message->load('user'));
@@ -118,22 +120,7 @@ class ChatController extends Controller
     public function unread(Request $request) {
         $token = $this->getToken($request);
 
-
-        $conversationIds = ChatConversation::query()
-            ->with(['lastMessage'])
-            ->where(static function (Builder $query) use ($token) {
-                return $query
-                    ->where('client_user_id', $token->user_id)
-                    ->orWhere('coach_user_id', $token->user_id);
-            })
-            ->pluck('id');
-
-
-        $count = ChatMessage::query()
-            ->where('seen', false)
-            ->whereIn('chat_conversation_id', $conversationIds)
-            ->where('user_id' , '!=', $token->user_id)
-            ->count();
+        $count = $this->unreadMessages($token);
 
         return response()->json(['data' => [
             'count' => $count
@@ -154,5 +141,24 @@ class ChatController extends Controller
         $token = explode(" ", $request->header('Authorization'))[1];
 
         return Token::where('token', $token)->first();
+    }
+
+    private function unreadMessages(Token $token): int
+    {
+        $conversationIds = ChatConversation::query()
+            ->with(['lastMessage'])
+            ->where(static function (Builder $query) use ($token) {
+                return $query
+                    ->where('client_user_id', $token->user_id)
+                    ->orWhere('coach_user_id', $token->user_id);
+            })
+            ->pluck('id');
+
+
+        return ChatMessage::query()
+            ->where('seen', false)
+            ->whereIn('chat_conversation_id', $conversationIds)
+            ->where('user_id' , '!=', $token->user_id)
+            ->count();
     }
 }

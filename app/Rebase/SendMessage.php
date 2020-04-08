@@ -5,14 +5,15 @@ namespace App\Rebase;
 
 class SendMessage
 {
-    public function sendFCM($message, $title, $id) {
+    public function sendFCM($message, $title, $id, $unreadMessages) {
         $url = env('FCM_SERVER_URL', '');
         $fields = array (
             'to' => $id,
             'notification' => array (
                 "body" => $message,
                 "title" => $title,
-                "sound" => "default"
+                "sound" => "default",
+                "badge" => $unreadMessages
             )
         );
         $fields = json_encode($fields);
