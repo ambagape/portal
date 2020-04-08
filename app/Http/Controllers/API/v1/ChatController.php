@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use DB;
 
 class ChatController extends Controller
 {
@@ -23,12 +24,16 @@ class ChatController extends Controller
         $token = $this->getToken($request);
 
         $conversations = ChatConversation::query()
+            ->select('chat_conversations.*', DB::raw('MAX(chat_messages.created_at)'))
+            ->leftJoin('chat_messages', 'chat_messages.chat_conversation_id', '=', 'chat_conversations.id')
             ->with(['lastMessage'])
             ->where(static function (Builder $query) use ($token) {
                 return $query
                     ->where('client_user_id', $token->user_id)
                     ->orWhere('coach_user_id', $token->user_id);
             })
+            ->orderBy(DB::raw('MAX(chat_messages.created_at)'), 'DESC')
+            ->groupBy('chat_conversations.id')
             ->get();
 
         return ChatConversationResource::collection($conversations);
