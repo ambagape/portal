@@ -109,13 +109,16 @@ class ChatController extends Controller
             'seen' => false
         ]);
 
-        $unreadMessages = $this->unreadMessages($token);
 
         if ($chat_conversation->client_user_id === $token->user_id) {
+            $token = $chat_conversation->coachUser->tokens[0];
+            $unreadMessages = $this->unreadMessages($token);
             event(new ChatMessageSent($message, $chat_conversation->coachUser, auth()->user(), $unreadMessages));
         }
 
         if ($chat_conversation->coach_user_id === $token->user_id) {
+            $token = $chat_conversation->clientUser->tokens[0];
+            $unreadMessages = $this->unreadMessages($token);
             event(new ChatMessageSent($message, $chat_conversation->clientUser, auth()->user(), $unreadMessages));
         }
 

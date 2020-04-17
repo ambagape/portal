@@ -37,13 +37,13 @@ class WebhookController extends Controller
 
         if($baseuser->AfspraakInfo->Afspraakstatus === 1 && $user) {
             $user->tokens->map(function ($token) use ($baseuser) {
-                (new SendMessage())->sendFCM('Er is een niewe afspraak op '. $baseuser->AfspraakInfo->Datum, 'Nieuwe afspraak', $token->push_token);
+                (new SendMessage())->sendFCM('Er is een niewe afspraak op '. $baseuser->AfspraakInfo->Datum, 'Nieuwe afspraak', $token->push_token, 0);
             });
             return new JsonResponse($request->get('key'));
         }
 
         $user->tokens->map(function ($token) use ($baseuser) {
-            (new SendMessage())->sendFCM('Er is een een afspraak gewijzigd op '. $baseuser->AfspraakInfo->Datum, 'Gewijzigde afspraak', $token->push_token);
+            (new SendMessage())->sendFCM('Er is een een afspraak gewijzigd op '. $baseuser->AfspraakInfo->Datum, 'Gewijzigde afspraak', $token->push_token, 0);
         });
 
         return new JsonResponse($request->get('key'));
