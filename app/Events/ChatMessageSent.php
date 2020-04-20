@@ -18,18 +18,19 @@ class ChatMessageSent implements ShouldBroadcast
     private $message;
     private $user;
 
-    public function __construct(ChatMessage $message, User $user, $sender, int $unreadMessages)
+    public function __construct(ChatMessage $message, User $user, $sender, int $unreadMessages, $conversation = null)
     {
         $this->message = $message;
         $this->user = $user;
 
         // Push notification
-        $user->tokens->map(function ($token) use ($sender, $message, $unreadMessages) {
+        $user->tokens->map(function ($token) use ($sender, $message, $unreadMessages, $conversation) {
             (new SendMessage)->SendFCM(
                 $message->message,
                 $sender->full_name,
                 $token->push_token,
-                $unreadMessages
+                $unreadMessages,
+                $conversation
             );
         });
     }

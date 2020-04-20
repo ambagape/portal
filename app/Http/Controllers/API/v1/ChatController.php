@@ -113,13 +113,13 @@ class ChatController extends Controller
         if ($chat_conversation->client_user_id === $token->user_id) {
             $token = $chat_conversation->coachUser->tokens[0];
             $unreadMessages = $this->unreadMessages($token);
-            event(new ChatMessageSent($message, $chat_conversation->coachUser, auth()->user(), $unreadMessages));
+            event(new ChatMessageSent($message, $chat_conversation->coachUser, auth()->user(), $unreadMessages, $chat_conversation));
         }
 
         if ($chat_conversation->coach_user_id === $token->user_id) {
             $token = $chat_conversation->clientUser->tokens[0];
             $unreadMessages = $this->unreadMessages($token);
-            event(new ChatMessageSent($message, $chat_conversation->clientUser, auth()->user(), $unreadMessages));
+            event(new ChatMessageSent($message, $chat_conversation->clientUser, auth()->user(), $unreadMessages, $chat_conversation));
         }
 
         return new ChatMessageResource($message->load('user'));
