@@ -4,12 +4,12 @@ namespace App\Events;
 
 use App\Models\ChatMessage;
 use App\Models\User;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Foundation\Events\Dispatchable;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use App\Rebase\SendMessage;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 
 class ChatMessageSent implements ShouldBroadcast
 {
@@ -18,18 +18,19 @@ class ChatMessageSent implements ShouldBroadcast
     private $message;
     private $user;
 
-    public function __construct(ChatMessage $message, User $user, $sender, int $unreadMessages)
+    public function __construct(ChatMessage $message, User $user, $sender, int $unreadMessages, $conversation = null)
     {
         $this->message = $message;
         $this->user = $user;
 
         // Push notification
-        $user->tokens->map(function ($token) use ($sender, $message, $unreadMessages) {
+        $user->tokens->map(function ($token) use ($sender, $message, $unreadMessages, $conversation) {
             (new SendMessage)->SendFCM(
                 $message->message,
                 $sender->full_name,
                 $token->push_token,
-                $unreadMessages
+                $unreadMessages,
+                $conversation
             );
         });
     }
