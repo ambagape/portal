@@ -10,11 +10,10 @@ use App\Models\ChatConversation;
 use App\Models\ChatMessage;
 use App\Models\Token;
 use App\Models\User;
+use DB;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use DB;
 
 class ChatController extends Controller
 {
@@ -37,6 +36,13 @@ class ChatController extends Controller
             ->get();
 
         return ChatConversationResource::collection($conversations);
+    }
+
+    private function getToken(Request $request)
+    {
+        $token = explode(" ", $request->header('Authorization'))[1];
+
+        return Token::where('token', $token)->first();
     }
 
     public function conversation(Request $request)
@@ -93,6 +99,15 @@ class ChatController extends Controller
         return ChatMessageResource::collection($chat_conversation->messages);
     }
 
+    private function isParticipant(User $user, ChatConversation $chat_conversation)
+    {
+        $isParticipant = $chat_conversation->client_user_id === $user->id || $chat_conversation->coach_user_id === $user->id;
+
+        if (!$isParticipant) {
+            abort(403);
+        }
+    }
+
     public function sendMessage(Request $request, ChatConversation $chat_conversation)
     {
         $token = $this->getToken($request);
@@ -125,32 +140,6 @@ class ChatController extends Controller
         return new ChatMessageResource($message->load('user'));
     }
 
-    public function unread(Request $request) {
-        $token = $this->getToken($request);
-
-        $count = $this->unreadMessages($token);
-
-        return response()->json(['data' => [
-            'count' => $count
-        ]], 200);
-    }
-
-    private function isParticipant(User $user, ChatConversation $chat_conversation)
-    {
-        $isParticipant = $chat_conversation->client_user_id === $user->id || $chat_conversation->coach_user_id === $user->id;
-
-        if (!$isParticipant) {
-            abort(403);
-        }
-    }
-
-    private function getToken(Request $request)
-    {
-        $token = explode(" ", $request->header('Authorization'))[1];
-
-        return Token::where('token', $token)->first();
-    }
-
     private function unreadMessages(Token $token): int
     {
         $conversationIds = ChatConversation::query()
@@ -166,7 +155,20 @@ class ChatController extends Controller
         return ChatMessage::query()
             ->where('seen', false)
             ->whereIn('chat_conversation_id', $conversationIds)
-            ->where('user_id' , '!=', $token->user_id)
+            ->where('user_id', '!=', $token->user_id)
             ->count();
+    }
+
+    public function unread(Request $request)
+    {
+        $token = $this->getToken($request);
+
+        $count = $this->unreadMessages($token);
+
+        return response()->json([
+            'data' => [
+                'count' => $count
+            ]
+        ], 200);
     }
 }
