@@ -29,11 +29,6 @@ build-backend:
     - mysql:5.7
     - redis:4.0.11-alpine
   image: beeproger/php-7.2:1.4
-  before_script:
-    - mkdir -p ~/.ssh
-    - eval $(ssh-agent -s)
-    - ssh-add /keys/id_rsa
-    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
   script:
     - cp .env.example .env
     - composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-dev
@@ -148,6 +143,8 @@ deploy-master:
 
 # Zero downtime setup
 .deploy:
+  tags:
+    - deploy
   before_script:
     - mkdir -p ~/.ssh
     - eval $(ssh-agent -s)
