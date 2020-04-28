@@ -11,7 +11,7 @@ variables:
   MYSQL_DATABASE: rebase
   DB_HOST: mysql
   DB_CONNECTION: mysql
-  CI_DEBUG_TRACE: "false"
+  CI_DEBUG_TRACE: "true"
 
 # Speed up builds
 cache:
