@@ -84,11 +84,46 @@ deploy-staging:
     ENV: "$STAGE_ENV",
     USER: "$STAGE_SRV_USER",
     HOST: "$STAGE_SRV_HOST",
-    SSH: "ssh -tt $STAGE_SRV_USER@$STAGE_SRV_HOST",
+    PORT: 22,
+    SSH: "ssh -tt $STAGE_SRV_USER@$STAGE_SRV_HOST -p $PORT -q",
     BASE_PATH: "$STAGE_SRV_PATH",
     CURRENT_PATH: "$STAGE_SRV_PATH/current",
     STORAGE_PATH: "$STAGE_SRV_PATH/storage",
     RELEASE_PATH: "$STAGE_SRV_PATH/releases/$CI_PIPELINE_ID",
+  }
+  extends: .deploy
+  stage: deploy
+  image: beeproger/php-7.2:1.3
+  script:
+    # Before activate
+    - $SSH "php $RELEASE_PATH/artisan migrate --force";
+    - $SSH "php $RELEASE_PATH/artisan storage:link";
+    # Active new release
+    - $SSH "ln -nfs $RELEASE_PATH $CURRENT_PATH";
+    # After activate
+    # - $SSH "php $RELEASE_PATH/artisan horizon:terminate";
+    - $SSH "php $RELEASE_PATH/artisan cache:clear";
+    - $SSH "php $RELEASE_PATH/artisan route:cache";
+    - $SSH "php $RELEASE_PATH/artisan config:clear";
+  only:
+    - develop
+  when: on_success
+  environment:
+    name: staging
+    url: ${STAGE_URL}
+    
+# Deploy develop 'master' branch
+deploy-master:
+  variables: {
+    ENV: "$PRODUCTION_ENV",
+    USER: "$PRODUCTION_SRV_USER",
+    HOST: "$PRODUCTION_SRV_HOST",
+    PORT: 22,
+    SSH: "ssh -tt $PRODUCTION_SRV_USER@$PRODUCTION_SRV_HOST -p $PORT -q",
+    BASE_PATH: "$PRODUCTION_SRV_PATH",
+    CURRENT_PATH: "$PRODUCTION_SRV_PATH/current",
+    STORAGE_PATH: "$PRODUCTION_SRV_PATH/storage",
+    RELEASE_PATH: "$PRODUCTION_SRV_PATH/releases/$CI_PIPELINE_ID",
   }
   extends: .deploy
   stage: deploy
@@ -127,7 +162,7 @@ deploy-staging:
     - $SSH "ln -nfs $STORAGE_PATH $RELEASE_PATH/storage"
     - $SSH "echo '$ENV' > $RELEASE_PATH/.env";
     - \[\[ -e ".ci-excludes" \]\] && xargs rm -rf < .ci-excludes || echo ci-excludes does not exist
-    - scp -P22 -r * $USER@$HOST:$RELEASE_PATH
+    - scp -P$PORT -r * $USER@$HOST:$RELEASE_PATH
   after_script:
     - eval $(ssh-agent -s)
     - ssh-add /keys/id_rsa
