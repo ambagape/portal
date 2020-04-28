@@ -135,8 +135,8 @@ deploy-master:
     - $SSH "php $RELEASE_PATH/artisan route:cache";
     - $SSH "php $RELEASE_PATH/artisan config:clear";
   only:
-    - develop
-  when: on_success
+    - master
+  when: manual
   environment:
     name: staging
     url: ${STAGE_URL}
