@@ -26,11 +26,10 @@ export class PasswordService {
         return this.http.post<null>(environment.baseUrl + '/ZendNieuwWachtwoordMail', body.toString(), {...PasswordService.setOptions()});
     }
 
-    public setPassword(email: string, password: string, token: string): Observable<{ gebruikerstype: number }> {
+    public setPassword(password: string, token: string): Observable<{ gebruikerstype: number }> {
         let body = new HttpParams();
         body = body.set('Token', token);
         body = body.set('Wachtwoord', password);
-        body = body.set('Email', email);
 
         return this.http
             .post<{ gebruikerstype: number }>(

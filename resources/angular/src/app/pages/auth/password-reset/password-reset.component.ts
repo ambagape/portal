@@ -30,7 +30,6 @@ export class PasswordResetComponent implements OnInit {
         this.passwordDontMatch = false;
 
         this.form = this.formBuilder.group({
-            email: [undefined, Validators.required],
             password: [undefined, [Validators.required, Validators.minLength(8)]],
             confirm: [undefined, [Validators.required, Validators.minLength(8)]]
         });
@@ -48,7 +47,7 @@ export class PasswordResetComponent implements OnInit {
             return;
         }
 
-        this.passwordService.setPassword(this.form.get('email').value, this.form.get('password').value, this.token).subscribe(() => {
+        this.passwordService.setPassword(this.form.get('password').value, this.token).subscribe(() => {
             this.showSuccess = true;
             this.showError = false;
         }, () => {
