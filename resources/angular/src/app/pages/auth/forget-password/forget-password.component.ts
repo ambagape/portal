@@ -1,21 +1,37 @@
 import { Component, OnInit } from '@angular/core';
+import { PasswordService } from '../../../services/password.service';
 
 @Component({
-  selector: 'app-forget-password',
-  templateUrl: './forget-password.component.html',
-  styleUrls: ['./forget-password.component.scss']
+    selector: 'app-forget-password',
+    templateUrl: './forget-password.component.html',
+    styleUrls: ['./forget-password.component.scss']
 })
 export class ForgetPasswordComponent implements OnInit {
 
-  public showSuccess = false;
+    public showSuccess = false;
+    public showError = false;
+    public email = '';
 
-  constructor() { }
+    constructor(private passwordService: PasswordService) {
+    }
 
-  ngOnInit() {
-  }
+    ngOnInit() {
+        this.showSuccess = false;
+        this.showError = false;
+    }
 
-  reset() {
-    this.showSuccess = !this.showSuccess;
-  }
+    reset() {
+        if (!this.email || this.email.length < 0) {
+            return;
+        }
+
+        this.passwordService.requestPassword(this.email).subscribe(() => {
+            this.showSuccess = true;
+            this.showError = false;
+        }, () => {
+            this.showSuccess = false;
+            this.showError = true;
+        });
+    }
 
 }
