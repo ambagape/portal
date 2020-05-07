@@ -32,7 +32,12 @@ export class PasswordService {
         body = body.set('Wachtwoord', password);
         body = body.set('Email', email);
 
-        return this.http.post<{ gebruikerstype: number }>(environment.baseUrl + '/ZetNieuwWachtwoord', body.toString(), {...PasswordService.setOptions()});
+        return this.http
+            .post<{ gebruikerstype: number }>(
+                environment.baseUrl + '/ZetNieuwWachtwoord',
+                body.toString(),
+                {...PasswordService.setOptions()}
+                );
     }
 
 }
