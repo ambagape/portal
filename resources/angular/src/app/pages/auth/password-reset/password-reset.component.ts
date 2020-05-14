@@ -39,6 +39,7 @@ export class PasswordResetComponent implements OnInit {
         this.passwordDontMatch = false;
 
         if (!this.form.valid) {
+            this.form.markAllAsTouched();
             return;
         }
 
