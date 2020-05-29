@@ -30,13 +30,27 @@ export class PasswordResetComponent implements OnInit {
         this.passwordDontMatch = false;
 
         this.form = this.formBuilder.group({
-            password: [undefined, [Validators.required, Validators.minLength(8)]],
-            confirm: [undefined, [Validators.required, Validators.minLength(8)]]
+            password: [
+                undefined,
+                [
+                    Validators.required,
+                    Validators.pattern('(?=.*[a-zA-z])(?=.*[0-9])(?=.*[!@#$%^&*()+?<>/\\\\|])[A-Za-z\\d!@#$%^&*()+?<>/\\\\|].{8,}')
+                ]
+            ],
+            confirm: [
+                undefined,
+                [
+                    Validators.required,
+                    Validators.pattern('(?=.*[a-zA-z])(?=.*[0-9])(?=.*[!@#$%^&*()+?<>/\\\\|])[A-Za-z\\d!@#$%^&*()+?<>/\\\\|].{8,}')
+                ]
+            ]
         });
     }
 
     reset() {
         this.passwordDontMatch = false;
+
+        console.log(this.form.get('password').errors);
 
         if (!this.form.valid) {
             this.form.markAllAsTouched();
