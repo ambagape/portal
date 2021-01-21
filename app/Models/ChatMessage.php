@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ChatMessage extends Model
 {
@@ -14,17 +15,17 @@ class ChatMessage extends Model
         'user',
     ];
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function conversation()
+    public function conversation(): BelongsTo
     {
         return $this->belongsTo(ChatConversation::class);
     }
 
-    public function participant()
+    public function participant(): BelongsTo
     {
         return $this->belongsTo(ChatParticipant::class, 'user_id', 'user_id');
     }
