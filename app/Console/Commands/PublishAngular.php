@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Console\Commands;
 
 use Exception;
@@ -44,8 +43,8 @@ class PublishAngular extends Command
         $input = resource_path('angular/dist/angular/index.html');
         $output = resource_path('views/angular.blade.php');
 
-        if (!file_exists($input)) {
-            throw new Exception("Index.html does not exsist in angular dist, run ng build first.");
+        if (! file_exists($input)) {
+            throw new Exception('Index.html does not exsist in angular dist, run ng build first.');
         }
         if (file_exists($output)) {
             File::delete($output);

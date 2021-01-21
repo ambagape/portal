@@ -5,7 +5,6 @@ namespace App\Http\Controllers\API\v1;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Rebase\SendMessage;
-use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\JsonResponse;
@@ -13,12 +12,11 @@ use Illuminate\Http\Request;
 
 class WebhookController extends Controller
 {
-
     public function notify(Request $request)
     {
         info($request->toArray());
         $request->validate([
-            'key' => 'required'
+            'key' => 'required',
         ]);
 
         $body = [];
@@ -27,23 +25,24 @@ class WebhookController extends Controller
 
         try {
             $client = new Client();
-            $response = $client->request('GET', env('REBASE_API_URL') . "/AfspraakInfo", ['query' => $body]);
-            $baseuser  = json_decode($response->getBody());
+            $response = $client->request('GET', env('REBASE_API_URL') . '/AfspraakInfo', ['query' => $body]);
+            $baseuser = json_decode($response->getBody());
         } catch (RequestException $e) {
             abort(500);
         }
 
         $user = User::where('rebase_user_id', $baseuser->AfspraakInfo->Client_Uniek_ID)->first();
 
-        if($baseuser->AfspraakInfo->Afspraakstatus === 1 && $user) {
+        if ($baseuser->AfspraakInfo->Afspraakstatus === 1 && $user) {
             $user->tokens->map(function ($token) use ($baseuser) {
-                (new SendMessage())->sendFCM('Er is een niewe afspraak op '. $baseuser->AfspraakInfo->Datum, 'Nieuwe afspraak', $token->push_token, 0);
+                (new SendMessage())->sendFCM('Er is een niewe afspraak op ' . $baseuser->AfspraakInfo->Datum, 'Nieuwe afspraak', $token->push_token, 0);
             });
+
             return new JsonResponse($request->get('key'));
         }
 
         $user->tokens->map(function ($token) use ($baseuser) {
-            (new SendMessage())->sendFCM('Er is een een afspraak gewijzigd op '. $baseuser->AfspraakInfo->Datum, 'Gewijzigde afspraak', $token->push_token, 0);
+            (new SendMessage())->sendFCM('Er is een een afspraak gewijzigd op ' . $baseuser->AfspraakInfo->Datum, 'Gewijzigde afspraak', $token->push_token, 0);
         });
 
         return new JsonResponse($request->get('key'));

@@ -44,5 +44,4 @@ class ChatMessageSent implements ShouldBroadcast
     {
         return new PrivateChannel('chat.' . $this->user->rebase_user_id);
     }
-
 }

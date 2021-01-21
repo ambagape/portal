@@ -8,10 +8,11 @@ class User extends Model
 {
     protected $fillable = [
         'rebase_user_id',
-        'full_name'
+        'full_name',
     ];
 
-    public function tokens() {
+    public function tokens()
+    {
         return $this->hasMany(Token::class);
     }
 }

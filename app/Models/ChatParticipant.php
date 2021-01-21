@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class ChatParticipant extends Model
 {
     protected $fillable = [
-        'user_id', 'chat_conversation_id'
+        'user_id', 'chat_conversation_id',
     ];
 
     protected $with = [
-        'user'
+        'user',
     ];
 
     public function conversation()

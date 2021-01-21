@@ -18,7 +18,7 @@ class AuthController extends Controller
         $validated = $request->validate([
             'username'  => 'required',
             'password'  => 'required',
-            'full_name'  => 'required'
+            'full_name'  => 'required',
         ]);
 
         $body = [];
@@ -29,7 +29,7 @@ class AuthController extends Controller
 
         try {
             $client = new Client();
-            $response = $client->post(env('REBASE_API_URL') . "/login",  ['form_params' => $body]);
+            $response = $client->post(env('REBASE_API_URL') . '/login', ['form_params' => $body]);
             $data = json_decode($response->getBody());
         } catch (RequestException $e) {
             abort(500);
@@ -37,9 +37,9 @@ class AuthController extends Controller
 
         // Get user
         $user = User::updateOrCreate([
-            'rebase_user_id' => $data->Login->UserID
+            'rebase_user_id' => $data->Login->UserID,
         ], [
-            'full_name' => $validated['full_name']
+            'full_name' => $validated['full_name'],
         ]);
 
         // Delete other tokens
@@ -48,7 +48,7 @@ class AuthController extends Controller
         // Create new token
         $token = Token::create([
             'user_id' => $user->id,
-            'token' => Str::random(60) . time()
+            'token' => Str::random(60) . time(),
         ]);
 
         return new JsonResponse([

@@ -43,8 +43,8 @@ return [
 
         'api' => [
             'driver' => 'custom-token',
-//            'provider' => 'users',
-//            'hash' => false,
+            //            'provider' => 'users',
+            //            'hash' => false,
         ],
     ],
 
