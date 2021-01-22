@@ -9,7 +9,7 @@ class SendMessage
 {
     public function sendFCM(string $message, string $title, string $id, int $unreadMessages, ChatConversation $conversation = null)
     {
-        $url = env('FCM_SERVER_URL', '');
+        $url = config('fcm.uri');
 
         $client = null;
         $coach = null;
@@ -36,7 +36,7 @@ class SendMessage
         ];
 
         $response = Http::withHeaders([
-            'Authorization' => 'key=' . env('FCM_SERVER_KEY', ''),
+            'Authorization' => 'key=' . config('fcm.key'),
         ])
         ->post($url, $fields);
 

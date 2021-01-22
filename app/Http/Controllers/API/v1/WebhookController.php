@@ -23,7 +23,7 @@ class WebhookController extends Controller
         $body['TOKEN'] = '{D6B2B336-E153-4B03-BBD9-3C72238A76FF}';
         $body['KEY'] = $request->get('key');
 
-        $response = Http::get(env('REBASE_API_URL') . '/AfspraakInfo', $body);
+        $response = Http::get(config('rebase.api_url') . '/AfspraakInfo', $body);
 
         if ($response->failed()) {
             abort(500);

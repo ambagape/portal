@@ -23,10 +23,10 @@ class AuthController extends Controller
         $body = [];
         $body['username'] = $validated['username'];
         $body['password'] = $validated['password'];
-        $body['AUTHENTICATIONKEY'] = env('REBASE_AUTH_KEY');
-        $body['AUTHENTICATIONPASSWORD'] = env('REBASE_AUTH_PASS');
+        $body['AUTHENTICATIONKEY'] = config('rebase.auth_key');
+        $body['AUTHENTICATIONPASSWORD'] = config('rebase.auth_password');
 
-        $response = Http::asForm()->post(env('REBASE_API_URL') . '/login', $body);
+        $response = Http::asForm()->post(config('rebase.api_url') . '/login', $body);
 
         if ($response->failed()) {
             abort(500);
