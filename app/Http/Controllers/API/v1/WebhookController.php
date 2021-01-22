@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Rebase\SendMessage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 
 class WebhookController extends Controller
@@ -29,21 +30,21 @@ class WebhookController extends Controller
             abort(500);
         }
 
-        $baseuser = (object) $response->json();
+        $baseuser = $response->json();
 
         /** @var User $user */
-        $user = User::where('rebase_user_id', $baseuser->AfspraakInfo->Client_Uniek_ID)->first();
+        $user = User::where('rebase_user_id', Arr::get($baseuser, 'AfspraakInfo.Client_Uniek_ID'))->first();
 
-        if ($baseuser->AfspraakInfo->Afspraakstatus === 1 && $user) {
+        if (Arr::get($baseuser, 'AfspraakInfo.Afspraakstatus') === 1 && $user) {
             $user->tokens->map(function (Token $token) use ($baseuser) {
-                (new SendMessage())->sendFCM('Er is een nieuwe afspraak op ' . $baseuser->AfspraakInfo->Datum, 'Nieuwe afspraak', $token->push_token, 0);
+                (new SendMessage())->sendFCM('Er is een nieuwe afspraak op ' . Arr::get($baseuser, 'AfspraakInfo.Datum'), 'Nieuwe afspraak', $token->push_token, 0);
             });
 
             return new JsonResponse($request->get('key'));
         }
 
         $user->tokens->map(function (Token $token) use ($baseuser) {
-            (new SendMessage())->sendFCM('Er is een een afspraak gewijzigd op ' . $baseuser->AfspraakInfo->Datum, 'Gewijzigde afspraak', $token->push_token, 0);
+            (new SendMessage())->sendFCM('Er is een een afspraak gewijzigd op ' . Arr::get($baseuser, 'AfspraakInfo.Datum'), 'Gewijzigde afspraak', $token->push_token, 0);
         });
 
         return new JsonResponse($request->get('key'));
