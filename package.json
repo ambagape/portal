@@ -7,8 +7,8 @@
         "frontend:dev": "cd ./resources/app && ./node_modules/@angular/cli/bin/ng serve",
         "build:frontend": "cd resources/app && ./node_modules/@angular/cli/bin/ng build",
         "build:frontend:prod": "cd resources/app && ./node_modules/@angular/cli/bin/ng build --prod && cd - && npm run publish:angular",
-        "build:frontend:stage": "cd resources/app && ./node_modules/@angular/cli/bin/ng build -c stage && cd - && npm run publish:angular",
-        "build:frontend:acc": "cd resources/app && ./node_modules/@angular/cli/bin/ng build -c acceptance && cd - && npm run publish:angular",
+        "build:frontend:stage": "cd resources/app && ./node_modules/@angular/cli/bin/ng build --prod && cd - && npm run publish:angular",
+        "build:frontend:acc": "cd resources/app && ./node_modules/@angular/cli/bin/ng build --prod && cd - && npm run publish:angular",
         "lint:frontend": "cd ./resources/app && ./node_modules/@angular/cli/bin/ng lint",
         "lint:fix:frontend": "cd ./resources/app && ./node_modules/@angular/cli/bin/ng lint --fix"
     },
