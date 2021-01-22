@@ -3,7 +3,7 @@
     "scripts": {
         "ci:frontend": "cd ./resources/app && npm ci",
         "i:frontend": "cd ./resources/app && npm i",
-        "publish:angular": "/bin/rm -rf public/angular/* && cp -R resources/app/dist/angular/ public/app && cp resources/app/dist/angular/index.html resources/views/angular.blade.php",
+        "publish:angular": "/bin/rm -rf public/angular/* && cp -R resources/app/dist/angular/ public/angular && cp resources/app/dist/angular/index.html resources/views/angular.blade.php",
         "frontend:dev": "cd ./resources/app && ./node_modules/@angular/cli/bin/ng serve",
         "build:frontend": "cd resources/app && ./node_modules/@angular/cli/bin/ng build",
         "build:frontend:prod": "cd resources/app && ./node_modules/@angular/cli/bin/ng build --prod && cd - && npm run publish:angular",
