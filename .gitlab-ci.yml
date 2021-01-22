@@ -8,3 +8,4 @@ variables:
   MYSQL_PASSWORD: secret
   MYSQL_DATABASE: rebase
   MAINTENANCE_MODE: "true"
+  STAGE_PHP_BINARY: "php7.4"
