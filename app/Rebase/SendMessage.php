@@ -3,6 +3,7 @@
 namespace App\Rebase;
 
 use App\Models\ChatConversation;
+use Illuminate\Support\Facades\Http;
 
 class SendMessage
 {
@@ -33,20 +34,12 @@ class SendMessage
                 'conversation_coach_full_name' => optional($coach)->full_name,
             ],
         ];
-        $fields = json_encode($fields);
-        $headers = [
-            'Authorization: key=' . env('FCM_SERVER_KEY', ''),
-            'Content-Type: application/json',
-        ];
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
+        $response = Http::withHeaders([
+            'Authorization' => 'key=' . env('FCM_SERVER_KEY', ''),
+        ])
+        ->post($url, $fields);
 
-        $result = curl_exec($ch);
-        curl_close($ch);
+        $response->throw();
     }
 }
