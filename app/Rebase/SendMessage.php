@@ -2,19 +2,19 @@
 
 namespace App\Rebase;
 
-use App\Models\User;
+use App\Models\ChatConversation;
 
 class SendMessage
 {
-    public function sendFCM($message, $title, $id, $unreadMessages, $conversation = null)
+    public function sendFCM(string $message, string $title, string $id, int $unreadMessages, ChatConversation $conversation = null)
     {
         $url = env('FCM_SERVER_URL', '');
 
         $client = null;
         $coach = null;
         if ($conversation) {
-            $client = User::findOrFail($conversation->client_user_id);
-            $coach = User::findOrFail($conversation->coach_user_id);
+            $client = $conversation->clientUser;
+            $coach = $conversation->coachUser;
         }
 
         $fields = [

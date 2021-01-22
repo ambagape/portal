@@ -5,10 +5,9 @@ namespace App\Http\Controllers\API\v1;
 use App\Http\Controllers\Controller;
 use App\Models\Token;
 use App\Models\User;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
 class AuthController extends Controller
@@ -27,13 +26,13 @@ class AuthController extends Controller
         $body['AUTHENTICATIONKEY'] = env('REBASE_AUTH_KEY');
         $body['AUTHENTICATIONPASSWORD'] = env('REBASE_AUTH_PASS');
 
-        try {
-            $client = new Client();
-            $response = $client->post(env('REBASE_API_URL') . '/login', ['form_params' => $body]);
-            $data = json_decode($response->getBody());
-        } catch (RequestException $e) {
+        $response = Http::asForm()->post(env('REBASE_API_URL') . '/login', $body);
+
+        if ($response->failed()) {
             abort(500);
         }
+
+        $data = $response->json();
 
         // Get user
         $user = User::updateOrCreate([

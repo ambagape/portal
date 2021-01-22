@@ -14,16 +14,19 @@
         "guzzlehttp/guzzle": "^7.2.0",
         "laravel/framework": "^8.0",
         "laravel/tinker": "^2.5.0",
+        "laravel/ui": "^3.2",
         "league/flysystem-memory": "^1.0",
-        "league/glide-laravel": "^1.0"
+        "league/glide-laravel": "^1.0",
+        "sentry/sentry-laravel": "^2.3"
     },
     "require-dev": {
+        "barryvdh/laravel-ide-helper": "^2.9",
         "beyondcode/laravel-dump-server": "^1.7",
         "filp/whoops": "^2.9.1",
+        "fruitcake/laravel-cors": "^2.0",
         "mockery/mockery": "^1.4.2",
         "nunomaduro/collision": "^5.1",
-        "phpunit/phpunit": "^9.0",
-        "fruitcake/laravel-cors": "^2.0"
+        "phpunit/phpunit": "^9.0"
     },
     "config": {
         "optimize-autoloader": true,
@@ -37,12 +40,10 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": "app/"
-        },
-        "classmap": [
-            "database/seeds",
-            "database/factories"
-        ]
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
     },
     "autoload-dev": {
         "psr-4": {
@@ -61,6 +62,18 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
+        ],
+        "post-install-cmd": [
+            "@composer ide"
+        ],
+        "post-update-cmd": [
+            "Illuminate\\Foundation\\ComposerScripts::postUpdate",
+            "@composer ide"
+        ],
+        "ide": [
+            "@php artisan ide-helper:generate",
+            "@php artisan ide-helper:meta",
+            "@php artisan ide-helper:models -N"
         ]
     }
 }
