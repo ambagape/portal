@@ -29,7 +29,7 @@ class WebhookController extends Controller
             abort(500);
         }
 
-        $baseuser = $response->json();
+        $baseuser = (object) $response->json();
 
         /** @var User $user */
         $user = User::where('rebase_user_id', $baseuser->AfspraakInfo->Client_Uniek_ID)->first();

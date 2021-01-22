@@ -32,7 +32,7 @@ class AuthController extends Controller
             abort(500);
         }
 
-        $data = $response->json();
+        $data = (object) $response->json();
 
         // Get user
         $user = User::updateOrCreate([
