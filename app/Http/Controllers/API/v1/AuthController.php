@@ -7,6 +7,7 @@ use App\Models\Token;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
@@ -32,11 +33,11 @@ class AuthController extends Controller
             abort(500);
         }
 
-        $data = (object) $response->json();
+        $data = $response->json();
 
         // Get user
         $user = User::updateOrCreate([
-            'rebase_user_id' => $data->Login->UserID,
+            'rebase_user_id' => Arr::get($data, 'Login.UserID'),
         ], [
             'full_name' => $validated['full_name'],
         ]);
