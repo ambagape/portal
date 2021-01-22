@@ -27,7 +27,7 @@ class ImageController extends Controller
 
             return $server->getImageResponse('images/profile/' . $id, request()->all());
 
-            // Return placeholder if no picture is found
+        // Return placeholder if no picture is found
         } else {
             $server = ServerFactory::create([
                 'response' => new LaravelResponseFactory(app('request')),
@@ -45,10 +45,10 @@ class ImageController extends Controller
     {
         $request->validate([
             'id' => 'required',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $profileFicture = data_get($request->allFiles(), "image", []);
+        $profileFicture = data_get($request->allFiles(), 'image', []);
 
         // Store picture, overwrite existing
         $path = 'app/public/images/profile';

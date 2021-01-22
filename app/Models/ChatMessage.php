@@ -3,28 +3,29 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ChatMessage extends Model
 {
     protected $fillable = [
-        'user_id', 'chat_conversation_id', 'message'
+        'user_id', 'chat_conversation_id', 'message',
     ];
 
     protected $with = [
-        'user'
+        'user',
     ];
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function conversation()
+    public function conversation(): BelongsTo
     {
         return $this->belongsTo(ChatConversation::class);
     }
 
-    public function participant()
+    public function participant(): BelongsTo
     {
         return $this->belongsTo(ChatParticipant::class, 'user_id', 'user_id');
     }

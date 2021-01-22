@@ -17,7 +17,6 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ChatController extends Controller
 {
-
     public function conversations(Request $request): AnonymousResourceCollection
     {
         $token = $this->getToken($request);
@@ -40,7 +39,7 @@ class ChatController extends Controller
 
     private function getToken(Request $request)
     {
-        $token = explode(" ", $request->header('Authorization'))[1];
+        $token = explode(' ', $request->header('Authorization'))[1];
 
         return Token::where('token', $token)->first();
     }
@@ -51,7 +50,7 @@ class ChatController extends Controller
 
         $validated = $request->validate([
             'coach_rebase_id' => 'required',
-            'client_rebase_id' => 'required'
+            'client_rebase_id' => 'required',
         ]);
 
         $coachUser = User::query()->where('rebase_user_id', $validated['coach_rebase_id'])->firstOrFail();
@@ -63,10 +62,10 @@ class ChatController extends Controller
             ->first();
 
         // Create conversation with participants if it didn't exist
-        if (!$conversation) {
+        if (! $conversation) {
             $conversation = ChatConversation::create([
                 'coach_user_id' => $coachUser->id,
-                'client_user_id' => $clientUser->id
+                'client_user_id' => $clientUser->id,
             ]);
         }
 
@@ -83,7 +82,7 @@ class ChatController extends Controller
             ->where('chat_conversation_id', $chat_conversation->id)
             ->where('user_id', '!=', auth()->user()->id)
             ->update([
-                'seen' => true
+                'seen' => true,
             ]);
 
         // Load all messages, or greater then given message id
@@ -92,8 +91,9 @@ class ChatController extends Controller
                 if ($request->get('filter')) {
                     $query->where('id', '>', $request->get('filter'));
                 }
+
                 return $query;
-            }
+            },
         ]);
 
         return ChatMessageResource::collection($chat_conversation->messages);
@@ -103,7 +103,7 @@ class ChatController extends Controller
     {
         $isParticipant = $chat_conversation->client_user_id === $user->id || $chat_conversation->coach_user_id === $user->id;
 
-        if (!$isParticipant) {
+        if (! $isParticipant) {
             abort(403);
         }
     }
@@ -114,16 +114,15 @@ class ChatController extends Controller
         $this->isParticipant($token->user, $chat_conversation);
 
         $validated = $request->validate([
-            'message' => 'required'
+            'message' => 'required',
         ]);
 
         $message = ChatMessage::create([
             'message' => $validated['message'],
             'chat_conversation_id' => $chat_conversation->id,
             'user_id' => $token->user_id,
-            'seen' => false
+            'seen' => false,
         ]);
-
 
         if ($chat_conversation->client_user_id === $token->user_id) {
             $tokens = $chat_conversation->coachUser->tokens[0];
@@ -151,7 +150,6 @@ class ChatController extends Controller
             })
             ->pluck('id');
 
-
         return ChatMessage::query()
             ->where('seen', false)
             ->whereIn('chat_conversation_id', $conversationIds)
@@ -167,8 +165,8 @@ class ChatController extends Controller
 
         return response()->json([
             'data' => [
-                'count' => $count
-            ]
+                'count' => $count,
+            ],
         ], 200);
     }
 }

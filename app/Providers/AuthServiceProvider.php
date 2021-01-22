@@ -3,10 +3,8 @@
 namespace App\Providers;
 
 use App\Models\Token;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Auth;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -29,8 +27,7 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         Auth::viaRequest('custom-token', function ($request) {
-
-            if(!$request->header('Authorization')){
+            if (! $request->header('Authorization')) {
                 abort(400);
             }
 
@@ -41,6 +38,7 @@ class AuthServiceProvider extends ServiceProvider
 
 //            $token = Token::where('token', explode(" ", $request->header('Authorization'))[1])->first();
             info('test');
+
             return $tokens->first()->user;
         });
     }

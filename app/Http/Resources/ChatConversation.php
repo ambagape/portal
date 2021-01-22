@@ -17,20 +17,20 @@ class ChatConversation extends JsonResource
     public function toArray($request)
     {
         $token = $this->getToken($request);
+
         return [
             'id' => $this->id,
             'last_message' => new ChatMessage($this->whenLoaded('lastMessage')),
             'client' => $this->clientUser,
             'coach' => $this->coachUser,
-            'unread_messages' => $this->unread($token->user_id)
+            'unread_messages' => $this->unread($token->user_id),
         ];
     }
 
     private function getToken(Request $request)
     {
-        $token = explode(" ", $request->header('Authorization'))[1];
+        $token = explode(' ', $request->header('Authorization'))[1];
 
         return Token::where('token', $token)->first();
     }
-
 }

@@ -34,8 +34,8 @@ class ChatConversation extends Model
         return $this->hasOne(ChatMessage::class)->latest();
     }
 
-    public function unread(int $user_id): int {
-
+    public function unread(int $user_id): int
+    {
         return ChatMessage::query()
             ->where('chat_conversation_id', $this->id)
             ->where('seen', false)

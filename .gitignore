@@ -60,3 +60,4 @@ Homestead.yaml
 npm-debug.log
 yarn-error.log
 angular.blade.php
+public/app
