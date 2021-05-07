@@ -1,4 +1,4 @@
-import { AbstractControl } from "@angular/forms";
+import { AbstractControl } from '@angular/forms';
 
 export const passwordMatchValidator = (control: AbstractControl) => {
     const password: string = control.get('password').value; // get password from our password form control
@@ -8,4 +8,4 @@ export const passwordMatchValidator = (control: AbstractControl) => {
       // if they don't match, set an error in our confirmPassword form control
       control.get('confirm').setErrors({ NoPassswordMatch: true });
     }
-  }
+  };
