@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
+import { ActivatedRoute } from '@angular/router';
 import { PasswordService } from '../../../services/password.service';
+import { mustNotContainValidator } from 'src/app/validators/must-not-contain.validator';
+import { passwordMatchValidator } from 'src/app/validators/password-match.validator';
+import { patternValidator } from 'src/app/validators/pattern.validator';
 
 @Component({
     selector: 'app-password-reset',
@@ -33,24 +37,51 @@ export class PasswordResetComponent implements OnInit {
             password: [
                 undefined,
                 [
+                    // 1. Password Field is Required
                     Validators.required,
-                    Validators.pattern('(?=.*[a-zA-z])(?=.*[0-9])(?=.*[!@#$%^&*()+?<>/\\\\|])[A-Za-z\\d!@#$%^&*()+?<>/\\\\|].{8,}')
+                    // 2. check whether the entered password has a number
+                    patternValidator(/\d/, { hasNumber: true }),
+                    // 3. check whether the entered password has upper case letter
+                    patternValidator(/[A-Z]/, { hasCapitalCase: true }),
+                    // 4. check whether the entered password has a lower-case letter
+                    patternValidator(/[a-z]/, { hasSmallCase: true }),
+                    // 5. must contain one or more of below
+                    patternValidator(/[@%$#!^&*()]/, { hasSpecialCharacters: true }),
+                    // 6. check whether the entered password has a forbidden special character
+                    mustNotContainValidator('+', { hasWrongSpecialCharacters: true }),
+                    // 7. Has a minimum length of 8 characters
+                    Validators.minLength(8)
+
                 ]
             ],
             confirm: [
                 undefined,
                 [
+                    // 1. Password Field is Required
                     Validators.required,
-                    Validators.pattern('(?=.*[a-zA-z])(?=.*[0-9])(?=.*[!@#$%^&*()+?<>/\\\\|])[A-Za-z\\d!@#$%^&*()+?<>/\\\\|].{8,}')
+                    // 2. check whether the entered password has a number
+                    patternValidator(/\d/, { hasNumber: true }),
+                    // 3. check whether the entered password has upper case letter
+                    patternValidator(/[A-Z]/, { hasCapitalCase: true }),
+                    // 4. check whether the entered password has a lower-case letter
+                    patternValidator(/[a-z]/, { hasSmallCase: true }),
+                    // 5. must contain one or more of below
+                    patternValidator(/[@%$#!^&*()]/, { hasSpecialCharacters: true }),
+                    // 6. check whether the entered password has a forbidden special character
+                    mustNotContainValidator('+', { hasWrongSpecialCharacters: true }),
+                    // 7. Has a minimum length of 8 characters
+                    Validators.minLength(8)
                 ]
             ]
+        }, {
+            validator: passwordMatchValidator
         });
     }
 
     reset() {
         this.passwordDontMatch = false;
 
-        console.log(this.form.get('password').errors);
+        // console.log(this.form.get('password').errors);
 
         if (!this.form.valid) {
             this.form.markAllAsTouched();
