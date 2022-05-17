@@ -15,6 +15,10 @@ class ChatMessage extends Model
         'user',
     ];
 
+    protected $casts = [
+        'message' => 'encrypted'
+    ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
