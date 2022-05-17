@@ -16,7 +16,7 @@ class ChatMessage extends Model
     ];
 
     protected $casts = [
-        'message' => 'encrypted'
+        'message' => 'encrypted',
     ];
 
     public function user(): BelongsTo
