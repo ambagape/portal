@@ -16,9 +16,9 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $validated = $request->validate([
-            'username'  => 'required',
-            'password'  => 'required',
-            'full_name'  => 'required',
+            'username' => 'required',
+            'password' => 'required',
+            'full_name' => 'required',
         ]);
 
         $body = [];
@@ -60,7 +60,7 @@ class AuthController extends Controller
     public function registerToken(Request $request)
     {
         $validated = $request->validate([
-            'push_token'  => 'required',
+            'push_token' => 'required',
         ]);
 
         // Remove push tokens from other keys
