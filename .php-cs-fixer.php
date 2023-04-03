@@ -5,30 +5,34 @@ use PhpCsFixer\Finder;
 
 function add_if_exists($path, &$res)
 {
-  if (file_exists($path)) {
-    $res[] = $path;
-  }
+    if (file_exists($path)) {
+        $res[] = $path;
+    }
 }
 
 $rules = [
     'array_syntax' => ['syntax' => 'short'],
     'binary_operator_spaces' => [
         'default' => 'single_space',
-        'operators' => ['=>' => null]
     ],
     'blank_line_after_namespace' => true,
     'blank_line_after_opening_tag' => true,
     'blank_line_before_statement' => [
-        'statements' => ['return']
+        'statements' => ['return'],
     ],
     'braces' => true,
     'cast_spaces' => true,
     'class_attributes_separation' => [
-        'elements' => ['method']
+        'elements' => [
+            'const' => 'one',
+            'method' => 'one',
+            'property' => 'one',
+            'trait_import' => 'none',
+        ],
     ],
     'class_definition' => true,
     'concat_space' => [
-        'spacing' => 'one'
+        'spacing' => 'one',
     ],
     'declare_equal_normalize' => true,
     'elseif' => true,
@@ -44,7 +48,7 @@ $rules = [
     'linebreak_after_opening_tag' => true,
     'line_ending' => true,
     'lowercase_cast' => true,
-    'lowercase_constants' => true,
+    'constant_case' => ['case' => 'lower'],
     'lowercase_keywords' => true,
     'lowercase_static_reference' => true, // added from Symfony
     'magic_method_casing' => true, // added from Symfony
@@ -57,8 +61,10 @@ $rules = [
             'extra',
             'throw',
             'use',
-            'use_trait',
-        ]
+        ],
+    ],
+    'class_attributes_separation'=> [
+        'elements' => ['trait_import' => 'one'],
     ],
     'no_blank_lines_after_class_opening' => true,
     'no_blank_lines_after_phpdoc' => true,
@@ -68,11 +74,11 @@ $rules = [
     'no_leading_import_slash' => true,
     'no_leading_namespace_whitespace' => true,
     'no_mixed_echo_print' => [
-        'use' => 'echo'
+        'use' => 'echo',
     ],
     'no_multiline_whitespace_around_double_arrow' => true,
     'multiline_whitespace_before_semicolons' => [
-        'strategy' => 'no_multi_line'
+        'strategy' => 'no_multi_line',
     ],
     'no_short_bool_cast' => true,
     'no_singleline_whitespace_before_semicolons' => true,
@@ -91,21 +97,21 @@ $rules = [
     'normalize_index_brace' => true,
     'not_operator_with_successor_space' => true,
     'object_operator_without_whitespace' => true,
-    'ordered_imports' => ['sortAlgorithm' => 'alpha'],
+    'ordered_imports' => ['sort_algorithm' => 'alpha'],
     'no_unused_imports' => true,
     'phpdoc_indent' => true,
-    'phpdoc_inline_tag' => true,
+    'phpdoc_inline_tag_normalizer' => true,
     'phpdoc_no_access' => true,
     'phpdoc_no_package' => true,
     'phpdoc_no_useless_inheritdoc' => true,
     'phpdoc_scalar' => true,
     'phpdoc_single_line_var_spacing' => true,
     'phpdoc_summary' => true,
-    'phpdoc_to_comment' => true,
+    'phpdoc_to_comment' => false,
     'phpdoc_trim' => true,
     'phpdoc_types' => true,
     'phpdoc_var_without_name' => true,
-    'psr4' => true,
+    'psr_autoloading' => true,
     'self_accessor' => true,
     'short_scalar_cast' => true,
     'simplified_null_return' => false,
@@ -115,7 +121,7 @@ $rules = [
     'single_import_per_statement' => true,
     'single_line_after_imports' => true,
     'single_line_comment_style' => [
-        'comment_types' => ['hash']
+        'comment_types' => ['hash'],
     ],
     'single_quote' => true,
     'space_after_semicolon' => true,
@@ -123,30 +129,34 @@ $rules = [
     'switch_case_semicolon_to_colon' => true,
     'switch_case_space' => true,
     'ternary_operator_spaces' => true,
-    'trailing_comma_in_multiline_array' => true,
+    'trailing_comma_in_multiline' => ['elements' => ['arrays']],
     'trim_array_spaces' => true,
     'unary_operator_spaces' => true,
     'visibility_required' => [
-        'elements' => ['method', 'property']
+        'elements' => ['method', 'property'],
     ],
     'whitespace_after_comma_in_array' => true,
     'array_indentation' => true,
+    'lambda_not_used_import' => true,
+    'return_type_declaration' => [
+        'space_before' => 'none',
+    ],
 ];
 
 $project_path = getcwd();
 $paths = [
-  $project_path . '/app',
-  $project_path . '/config',
-  $project_path . '/database',
-  $project_path . '/resources',
-  $project_path . '/routes',
-  $project_path . '/tests',
-  $project_path . '/src',
+    $project_path . '/app',
+    $project_path . '/config',
+    $project_path . '/database',
+    $project_path . '/resources',
+    $project_path . '/routes',
+    $project_path . '/tests',
+    $project_path . '/src',
 ];
 
 $in = [];
-foreach($paths as $path) {
-	add_if_exists($path, $in);
+foreach ($paths as $path) {
+    add_if_exists($path, $in);
 }
 
 $finder = Finder::create()
@@ -156,7 +166,7 @@ $finder = Finder::create()
     ->ignoreDotFiles(true)
     ->ignoreVCS(true);
 
-return Config::create()
+return (new Config)
     ->setFinder($finder)
     ->setRules($rules)
     ->setRiskyAllowed(true)
