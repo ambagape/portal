@@ -1,6 +1,6 @@
 include:
   - project: 'automation/laravel-ci'
-    ref: 0.0.20
+    ref: latest
     file: '.laravel-js-framework-template.yml'
 
 variables:
