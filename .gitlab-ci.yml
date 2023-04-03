@@ -1,7 +1,7 @@
 include:
   - project: 'automation/laravel-ci'
     ref: latest
-    file: '.laravel-js-framework-template.yml'
+    file: '.laravel-template.yml'
 
 variables:
   MYSQL_USER: app
@@ -10,3 +10,4 @@ variables:
   MAINTENANCE_MODE: "true"
   STAGE_PHP_BINARY: "php8.1"
   DEFAULT_PHP_IMAGE_VERSION: "git.beeproger.io:4567/beeproger-docker-images/php-8.1:stable"
+  ENABLE_FRONTEND: "true"
