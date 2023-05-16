@@ -26,6 +26,7 @@ namespace App\Models{
  * @property-read int|null $messages_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ChatParticipant> $participants
  * @property-read int|null $participants_count
+ * @method static \Database\Factories\ChatConversationFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|ChatConversation newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ChatConversation newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ChatConversation query()
@@ -102,6 +103,7 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\User $user
+ * @method static \Database\Factories\TokenFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|Token newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Token newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Token query()
