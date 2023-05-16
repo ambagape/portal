@@ -8,6 +8,6 @@ variables:
   MYSQL_PASSWORD: secret
   MYSQL_DATABASE: rebase
   MAINTENANCE_MODE: "true"
-  STAGE_PHP_BINARY: "php8.1"
-  DEFAULT_PHP_IMAGE_VERSION: "git.beeproger.io:4567/beeproger-docker-images/php-8.1:stable"
+  STAGE_PHP_BINARY: "php8.2"
+  DEFAULT_PHP_IMAGE_VERSION: "git.beeproger.io:4567/beeproger-docker-images/php-8.2:latest"
   ENABLE_FRONTEND: "true"
