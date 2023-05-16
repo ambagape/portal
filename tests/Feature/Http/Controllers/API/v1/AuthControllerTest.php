@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\API\v1;
 
-use App\Http\Controllers\API\v1\AuthController;
 use App\Models\Token;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
@@ -44,7 +43,6 @@ class AuthControllerTest extends TestCase
         $testResponse->assertJson([
             'user_id' => Token::first()->user_id,
         ]);
-
     }
 
     public function testRegisterToken()

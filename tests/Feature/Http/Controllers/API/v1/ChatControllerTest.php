@@ -11,7 +11,6 @@ class ChatControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-
     public function test_it_returns_conversations()
     {
         $user = User::factory()->create();
@@ -23,7 +22,7 @@ class ChatControllerTest extends TestCase
         $message1 = $conversations[0]->messages()->create(['message' => 'Hello, world!', 'user_id' => $conversations[0]->client_user_id]);
         $message2 = $conversations[1]->messages()->create(['message' => 'Hi there!', 'user_id' => $conversations[1]->coach_user_id]);
 
-        $response = $this->get('/api/v1/chat/conversations', ['Authorization' => "Bearer " . $token->token]);
+        $response = $this->get('/api/v1/chat/conversations', ['Authorization' => 'Bearer ' . $token->token]);
         $response->assertOk();
 
         $response->assertJson([
@@ -42,7 +41,7 @@ class ChatControllerTest extends TestCase
                         'message' => $message2->message,
                     ],
                 ],
-            ]
+            ],
         ]);
     }
 
@@ -50,7 +49,6 @@ class ChatControllerTest extends TestCase
     {
         $token = $this->apiLogin();
         $user = User::find($token->user_id);
-
 
         $conversation = ChatConversation::factory()->create([
             'coach_user_id' => $user->id,
@@ -60,7 +58,7 @@ class ChatControllerTest extends TestCase
         $response = $this->post('/api/v1/chat/conversations', [
             'coach_rebase_id' => $conversation->coachUser->rebase_user_id,
             'client_rebase_id' => $conversation->clientUser->rebase_user_id,
-        ], ['Authorization' => "Bearer " . $token->token]);
+        ], ['Authorization' => 'Bearer ' . $token->token]);
         $response->assertOk();
 
         // Ensure the response contains the correct conversation
@@ -68,15 +66,14 @@ class ChatControllerTest extends TestCase
             'data' => [
                 'id' => $conversation->id,
                 'client' => [
-                    'id' => $conversation->clientUser->id
+                    'id' => $conversation->clientUser->id,
                 ],
                 'coach' => [
-                    'id' => $conversation->coachUser->id
-                ]
-            ]
+                    'id' => $conversation->coachUser->id,
+                ],
+            ],
         ]);
     }
-
 
     public function test_it_returns_messages_for_a_conversation()
     {
@@ -90,9 +87,6 @@ class ChatControllerTest extends TestCase
         ]);
 
         $response = $this->get("/api/v1/chat/messages/$conversation->id", ['Authorization' => "Bearer $token->token"]);
-        $response->assertOk()->assertJsonCount(2,'data');
-
+        $response->assertOk()->assertJsonCount(2, 'data');
     }
-
-
 }

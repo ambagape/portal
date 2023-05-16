@@ -13,7 +13,6 @@ abstract class TestCase extends BaseTestCase
 
     public function apiLogin(): Token
     {
-
         $user = User::factory()
             ->create();
 
@@ -25,6 +24,5 @@ abstract class TestCase extends BaseTestCase
             'user_id' => $user->id,
             'token' => Str::random(60) . time(),
         ]);
-
     }
 }
