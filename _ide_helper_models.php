@@ -22,9 +22,9 @@ namespace App\Models{
  * @property-read \App\Models\User $clientUser
  * @property-read \App\Models\User $coachUser
  * @property-read \App\Models\ChatMessage|null $lastMessage
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ChatMessage[] $messages
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ChatMessage> $messages
  * @property-read int|null $messages_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ChatParticipant[] $participants
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ChatParticipant> $participants
  * @property-read int|null $participants_count
  * @method static \Illuminate\Database\Eloquent\Builder|ChatConversation newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ChatConversation newQuery()
@@ -49,7 +49,7 @@ namespace App\Models{
  * @property int $chat_conversation_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\ChatConversation $conversation
+ * @property-read \App\Models\ChatConversation|null $conversation
  * @property-read \App\Models\ChatParticipant $participant
  * @property-read \App\Models\User $user
  * @method static \Illuminate\Database\Eloquent\Builder|ChatMessage newModelQuery()
@@ -75,8 +75,8 @@ namespace App\Models{
  * @property int $chat_conversation_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\ChatConversation $conversation
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ChatMessage[] $messages
+ * @property-read \App\Models\ChatConversation|null $conversation
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ChatMessage> $messages
  * @property-read int|null $messages_count
  * @property-read \App\Models\User $user
  * @method static \Illuminate\Database\Eloquent\Builder|ChatParticipant newModelQuery()
@@ -124,8 +124,9 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property string $full_name
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Token[] $tokens
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Token> $tokens
  * @property-read int|null $tokens_count
+ * @method static \Database\Factories\UserFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|User newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|User query()

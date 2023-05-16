@@ -27,7 +27,8 @@
         "fruitcake/laravel-cors": "^2.0",
         "mockery/mockery": "^1.4.2",
         "nunomaduro/collision": "^5.1",
-        "phpunit/phpunit": "^9.0"
+        "phpunit/phpunit": "^9.0",
+        "fakerphp/faker": "^1.21"
     },
     "config": {
         "optimize-autoloader": true,
